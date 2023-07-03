@@ -76,6 +76,7 @@ def read_and_clean(filename, outputname, gulp):
     for ii in range(0, nsamp, gulp):
         dataproc = data[:, ii * gulp : (ii + 1) * gulp]
         badchans = sk_filter(dataproc.T, df, dt, sigma=4)
+        print("Here")
         data[badchans, ii * gulp : (ii + 1) * gulp] = 0
         spectrum = dataproc.mean(1)
         plt.figure()
@@ -104,4 +105,4 @@ if __name__ == '__main__':
     filename = sys.argv[1]
     outputname = sys.argv[2]
 
-    read_and_clean(filename, outputname,1024)
+    read_and_clean(filename, outputname,4096)
