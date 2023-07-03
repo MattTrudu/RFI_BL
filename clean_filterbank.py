@@ -59,18 +59,32 @@ def read_and_clean(filename, outputname, gulp):
     nsamp = filterbank.header.nsamples
     nchan = filterbank.header.nchans
     nbits = filterbank.header.nbits
+    df    = filterbank.header.foff
+    dt    = filterbank.header.tsamp
 
     outfile = filterbank.header.prepOutfile(outputname, back_compatible = True, nbits = nbits)
 
-    #data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
+    data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
 
     nchunks = nsamp // gulp
+    channels = np.arange(0, nchan)
 
     for ii in range(0, nsamp, gulp):
-        data = filterbank.readBlock(0, gulp)
-        datawrite = data.T.astype("uint8")
-        outfile.cwrite(datawrite.ravel())
-    data = filterbank.readBlock(gulp * nchunks, nsamp - gulp * nchunks)
+        dataproc = data[:, ii * gulp : (ii + 1) * gulp]
+        badchans = sk_filter(dataproc.T, df, dt, sigma=4)
+        data[badchans, ii * gulp : (ii + 1) * gulp] = 0
+        spectrum = dataproc.mean(1)
+        plt.figure()
+        plt.plot(channels, spectrum)
+        plt.plot(channels[badchans], spectrum[badchans], "o")
+        plt.savefig(f"{ii}.png")
+
+
+    dataproc = data[:, nchunks * gulp : -1]
+    badchans = sk_filter(dataproc.T, df, dt, sigma=4)
+    data[badchans, nchunks * gulp : -1] = 0
+
+
     datawrite = data.T.astype("uint8")
     outfile.cwrite(datawrite.ravel())
 
