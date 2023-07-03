@@ -67,8 +67,17 @@ def read_and_clean(filename, outputname, gulp):
     dt    = filterbank.header.tsamp
 
     outfile = filterbank.header.prepOutfile(outputname, back_compatible = True, nbits = nbits)
+    channels = np.arange(0, nchan)
 
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
+    badchans = sk_filter(data.T, df, dt, sigma=4)
+    data[badchans,:] = 0
+    plt.figure()
+    plt.plot(channels, spectrum)
+    plt.plot(channels[badchans], spectrum[badchans], "o")
+    plt.savefig(f"spec.png")
+
+    """
 
     nchunks = nsamp // gulp
     channels = np.arange(0, nchan)
@@ -88,7 +97,7 @@ def read_and_clean(filename, outputname, gulp):
     dataproc = data[:, nchunks * gulp : -1]
     badchans = sk_filter(dataproc.T, df, dt, sigma=4)
     data[badchans, nchunks * gulp : -1] = 0
-
+    """
 
     datawrite = data.T.astype("uint8")
     outfile.cwrite(datawrite.ravel())
