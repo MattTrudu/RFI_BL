@@ -15,50 +15,43 @@ def elements_for_10_percent_sum(array):
     num_elements = np.searchsorted(cumulative_sum, target_sum, side='right') + 1
     return num_elements
 
-def eigenbasis(A):
-    evalues, evectors = np.linalg.eigh(A)
+def calc_N(channel_bandwidth, tsamp):
 
-    sortidx  = evalues.argsort()[::-1]
-    evalues  = evalues[sortidx]
-    evectors = evectors[:,sortidx]
+    tn = np.abs(1 / (channel_bandwidth * 10 ** 6))
+    return np.round(tsamp / tn)
 
-    return evalues,evectors
+def spectral_kurtosis(data, N=1, d=None):
 
-def klt(signal,neig):
-    acf = correlate(signal-np.mean(signal),signal-np.mean(signal), mode='full')/len(signal)
-    nmax = np.argmax(np.abs(acf))
-    #acf = acf/acf[nmax]
+    zero_mask = data == 0
+    data = np.ma.array(data.astype(float), mask=zero_mask)
+    S1 = data.sum(0)
+    S2 = (data ** 2).sum(0)
+    M = data.shape[0]
+    if d is None:
+        d = (np.nanmean(data.ravel()) / np.nanstd(data)) ** 2
+    return ((M * d * N) + 1) * ((M * S2 / (S1 ** 2)) - 1) / (M - 1)
 
-    T = toeplitz(acf[nmax:nmax+len(signal)])
+def sk_filter(data, channel_bandwidth, tsamp, N=None, d=None, sigma=5):
 
-    eigenspectrum,eigenvectors = eigenbasis(T)
+    if not N:
+        N = calc_N(channel_bandwidth, tsamp)
+    sk = spectral_kurtosis(data, d=d, N=N)
+    nan_mask = np.isnan(sk)
+    sk[nan_mask] = np.nan
+    sk_c = sk[~nan_mask]
+    std = 1.4826 * stats.median_abs_deviation(sk_c)
+    h = np.median(sk_c) + sigma * std
+    l = np.median(sk_c) - sigma * std
+    mask = (sk < h) & (sk > l)
+    bad_channels = ~mask
+    return bad_channels
 
-    coeff = np.matmul((signal[:]-np.mean(signal)),np.conjugate((eigenvectors[:,:])))
-
-    recsignal = np.matmul(coeff[0:int(neig)],np.transpose(eigenvectors[:,0:int(neig)])) + np.mean(signal)
-
-    return eigenspectrum,eigenvectors,recsignal
-
-def iqr_filter(spec, smoothspec):
-
-    detr = spec - smoothspec
-
-    ordered = np.sort(detr)
-    q1 = ordered[detr.size // 4]
-    q2 = ordered[detr.size // 2]
-    q3 = ordered[detr.size // 4 * 3]
-    lowlim = q2 - 2 * (q2 - q1)
-    hilim = q2 + 2 * (q3 - q2)
-
-    badchans = (detr < lowlim) | (detr > hilim)
-
-    return badchans
-
-def read_and_clean(filename, outputname):
+def read_and_clean(filename, outputname, gulp):
 
     """
     filename : name of the filterbankfile
     outputname : name of the filterbank cleaned
+    gulp: number of time bins to read
     """
 
     filterbank = FilReader(filename)
@@ -69,12 +62,22 @@ def read_and_clean(filename, outputname):
 
     outfile = filterbank.header.prepOutfile(outputname, back_compatible = True, nbits = nbits)
 
-    data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
+    #data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
 
+    nchunks = nsamp // gulp
+
+    for ii in range(0, nsamp, gulp):
+        data = filterbank.readBlock(0, gulp)
+        datawrite = data.T.astype("uint8")
+        outfile.cwrite(datawrite.ravel())
+    data = filterbank.readBlock(gulp * nchunks, nsamp - gulp * nchunks)
     datawrite = data.T.astype("uint8")
-    #print(data.shape)
-
     outfile.cwrite(datawrite.ravel())
+
+    outfile.close()
+
+    #datawrite = data.T.astype("uint8")
+    #outfile.cwrite(datawrite.ravel())
 
 
 
