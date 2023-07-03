@@ -30,6 +30,10 @@ def spectral_kurtosis(data, N=1, d=None):
     if d is None:
         d = (np.nanmean(data.ravel()) / np.nanstd(data)) ** 2
     return ((M * d * N) + 1) * ((M * S2 / (S1 ** 2)) - 1) / (M - 1)
+def median_abs_deviation(sk_c):
+    median = np.median(sk_c)
+    mad = np.median(np.abs(sk_c - median))
+    return mad
 
 def sk_filter(data, channel_bandwidth, tsamp, N=None, d=None, sigma=5):
 
@@ -39,7 +43,7 @@ def sk_filter(data, channel_bandwidth, tsamp, N=None, d=None, sigma=5):
     nan_mask = np.isnan(sk)
     sk[nan_mask] = np.nan
     sk_c = sk[~nan_mask]
-    std = 1.4826 * stats.median_abs_deviation(sk_c)
+    std = 1.4826 * median_abs_deviation(sk_c)
     h = np.median(sk_c) + sigma * std
     l = np.median(sk_c) - sigma * std
     mask = (sk < h) & (sk > l)
