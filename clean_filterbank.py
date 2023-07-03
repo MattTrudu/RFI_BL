@@ -86,4 +86,4 @@ if __name__ == '__main__':
     filename = sys.argv[1]
     outputname = sys.argv[2]
 
-    read_and_clean(filename, outputname)
+    read_and_clean(filename, outputname,1024)
