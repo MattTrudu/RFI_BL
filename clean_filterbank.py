@@ -71,7 +71,7 @@ def read_and_clean(filename, outputname, gulp):
 
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
     spectrum = data.mean(1)
-    badchans = sk_filter(data.T, df, dt, sigma=4)
+    badchans = sk_filter(data.T, df, dt, sigma=3)
     data[badchans,:] = 0
     plt.figure()
     plt.plot(channels, spectrum)
