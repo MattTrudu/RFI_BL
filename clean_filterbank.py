@@ -120,31 +120,13 @@ def read_and_clean(filename,
         data[badchans, :] = 0
 
     if klt_clean:
-        nchunks = nsamp // klt_window
-        remainder = nsamp % klt_window
 
-        for ii in tqdm(range(nchunks + 1)):
-            start = ii * klt_window
-            end = start + klt_window
-
-            if ii == nchunks:
-                end = nsamp
-
-            datagrabbed = data[:, start:end]
-            neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
-            data[:, start:end] -= rfitemplate
-
-    """
-    if (klt_clean is True):
         nchunks = nsamp // klt_window
         for ii in tqdm(range(nchunks)):
             datagrabbed = data[:,ii * klt_window : (ii + 1) * klt_window]
             neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
-            data[:,ii * klt_window : (ii + 1) * klt_window] = data[:,ii * klt_window : (ii + 1) * klt_window] - rfitemplate
-        datagrabbed = data[:,nchunks * klt_window : -1]
-        neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
-        data[:,nchunks * klt_window : -1] = data[:,nchunks * klt_window : -1] - rfitemplate
-    """
+            data[:,ii * klt_window : (ii + 1) * klt_window] -=  rfitemplate
+
     if int(nbits) == int(8):
         datawrite = data.T.astype("uint8")
     if int(nbits) == int(16):
