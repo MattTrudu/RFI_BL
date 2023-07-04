@@ -119,6 +119,26 @@ def read_and_clean(filename,
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
         data[badchans, :] = 0
 
+    datatest = data[:, 0 : klt_window]
+    neig, ev, evecs, rfitemplate = klt(datatest, var_frac)
+    dataclean = datatest - rfitemplate
+
+    plt.figure()
+    plt.plot(ev, "o")
+    plt.savefig("ev.png")
+
+    plt.figure()
+    plt.imshow(datatest, aspect = "auto")
+    plt.savefig("datatest.png")
+
+    plt.figure()
+    plt.imshow(rfitemplate, aspect = "auto")
+    plt.savefig("rfitemplate.png")
+
+    plt.figure()
+    plt.imshow(dataclean, aspect = "auto")
+    plt.savefig("dataclean.png")     
+
     if klt_clean:
 
         nchunks = nsamp // klt_window
