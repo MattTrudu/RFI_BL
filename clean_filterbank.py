@@ -6,6 +6,7 @@ from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
+import os 
 import sys
 import argparse
 
