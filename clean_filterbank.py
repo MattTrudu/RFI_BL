@@ -78,14 +78,15 @@ def read_and_clean(filename, outputname, gulp):
     mu    = timeseries.mean()
     sigma = timeseries.std()
 
-    baseline = gaussian_filter(timeseries, 101, truncate = 1)
-    badbins = (baseline < mu - 4 * sigma) | (baseline > mu + 4 * sigma)
+    baseline = gaussian_filter(timeseries, 1, truncate = 1)
+    badbins = (baseline < mu - 3 * sigma) | (baseline > mu + 3 * sigma)
     data[badchans,:] = 0
     data[:, badbins] = 0
     bins = np.arange(nsamp)
 
     plt.figure()
     plt.plot(timeseries)
+    plt.plot(bins, baseline)
     plt.plot(bins[badbins], timeseries[badbins], "o")
     plt.savefig(f"ts.png")
     plt.figure()
