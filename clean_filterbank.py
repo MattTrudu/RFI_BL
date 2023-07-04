@@ -114,8 +114,9 @@ def _get_parser():
                         '--output_name',
                         action = "store" ,
                         help = "Output File Name (Default: filename_cleaned.fil)",
-                        default = None)
+                        default = None
                         )
+
 
     return parser.parse_args()
 
