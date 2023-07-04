@@ -74,6 +74,7 @@ def read_and_clean(filename, output_dir = os.getcwd(),  output_name = None ):
     nbits = filterbank.header.nbits
     df    = filterbank.header.foff
     dt    = filterbank.header.tsamp
+    print(nbits)
 
     outfile = filterbank.header.prepOutfile(os.path.join(output_dir,output_name), back_compatible = True, nbits = nbits)
     channels = np.arange(0, nchan)
