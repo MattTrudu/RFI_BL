@@ -6,6 +6,7 @@ from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
+from tqdm import tqdm
 import os
 import sys
 import argparse
@@ -47,11 +48,50 @@ def sk_filter(data, channel_bandwidth, tsamp, N=None, d=None, sigma=5):
     bad_channels = ~mask
     return bad_channels
 
+def eigenbasis(matrix):
+
+    """
+    Compute the eigenvalues and the eigenvectors of a square matrix and return the eigenspectrum (eigenvalues sorted in decreasing order) and the sorted eigenvectors respect
+    to the eigenspectrum for the KLT analysis
+    """
+
+    eigenvalues,eigenvectors = np.linalg.eigh(matrix)
+
+    if eigenvalues[0] < eigenvalues[-1]:
+        eigenvalues = np.flipud(eigenvalues)
+        eigenvectors = np.fliplr(eigenvectors)
+    eigenspectrum = eigenvalues
+    return eigenspectrum,eigenvectors
+
+def count_elements_for_threshold(arr, threshold):
+    sorted_arr = np.sort(arr)[::-1]  # Sort array in descending order
+    total_sum = np.sum(sorted_arr)
+    cumulative_sum = np.cumsum(sorted_arr)
+    num_elements = np.searchsorted(cumulative_sum, threshold * total_sum, side='right') + 1
+    return num_elements
+
+def klt(signals, threshold):
+
+    R = np.cov((signals-np.mean(signals,axis=0)),rowvar=False)
+
+    eigenspectrum,eigenvectors = eigenbasis(R)
+
+    neig = count_elements_for_threshold(eigenspectrum, threshold)
+
+    coeff = np.matmul((signals[:,:]-np.mean(signals,axis=0)),np.conjugate((eigenvectors[:,:])))
+    recsignals = np.matmul(coeff[:,0:int(neig)],np.transpose(eigenvectors[:,0:int(neig)])) + np.mean(signals,axis=0)
+
+    return neig,eigenspectrum,eigenvectors,recsignals
+
+
 def read_and_clean(filename,
                    output_dir = os.getcwd(),
                    output_name = None,
                    sk_flag = False,
-                   sk_sig = 3
+                   sk_sig = 3,
+                   klt_clean = False,
+                   var_frac = 0.3,
+                   klt_window = klt_window
                    ):
 
 
@@ -80,6 +120,15 @@ def read_and_clean(filename,
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
         data[badchans, :] = 0
 
+    if (klt_clean is True):
+        nchunks = nsamp // klt_window
+        for ii in tqdm(range(nchunks)):
+            datagrabbed = data[:,ii * klt_window : (ii + 1) * klt_window]
+            neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+            data[:,ii * klt_window : (ii + 1) * klt_window] = data[:,ii * klt_window : (ii + 1) * klt_window] - rfitemplate
+        datagrabbed = data[:,nchunks * klt_window : -1]
+        neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+        data[:,nchunks * klt_window : -1] = data[:,nchunks * klt_window : -1] - rfitemplate
 
     if int(nbits) == int(8):
         datawrite = data.T.astype("uint8")
@@ -133,7 +182,25 @@ def _get_parser():
                         action = "store" ,
                         help = "Sigma for the Spectral Kurtosis (Default: 3)"
                         )
-
+    parser.add_argument('-klt',
+                        '--karhunen_loeve_cleaning',
+                        help = "Evaluate an RFI template via a KLT and remove it from the data. Default = False.",
+                        action = 'store_true',
+                        )
+    parser.add_argument('-var_frac',
+                        '--variance_fraction',
+                        type = float,
+                        default = 0.3,
+                        action = "store" ,
+                        help = "The fraction of the total variance of the signal to consider (between 0 and 1). The number of associated eigenvalues will be computed from this. (Default: 0.3)"
+                        )
+    parser.add_argument('-klt_win',
+                        '--klt_window',
+                        type = int,
+                        default = 1024,
+                        action = "store" ,
+                        help = "Number of time bins to consider in each read to make the KLT. (Default: 1024)"
+                        )
 
     return parser.parse_args()
 
@@ -147,13 +214,19 @@ if __name__ == '__main__':
     output_name = args.output_name
     sk_flag     = args.spectral_kurtosis
     sk_sig      = args.spectral_kurtosis_sigma
+    klt_clean   = args.karhunen_loeve_cleaning
+    var_frac    = args.variance_fraction
+    klt_window  = args.klt_window
 
 
     read_and_clean(filename,
                 output_dir  = output_dir,
                 output_name = output_name,
                 sk_flag = sk_flag,
-                sk_sig = sk_sig
+                sk_sig = sk_sig,
+                klt_clean = klt_clean,
+                var_frac = var_frac,
+                klt_window = klt_window
                 )
 
 
