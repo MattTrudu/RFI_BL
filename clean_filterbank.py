@@ -119,6 +119,22 @@ def read_and_clean(filename,
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
         data[badchans, :] = 0
 
+    if klt_clean:
+    nchunks = nsamp // klt_window
+    remainder = nsamp % klt_window
+
+    for ii in tqdm(range(nchunks + 1)):
+        start = ii * klt_window
+        end = start + klt_window
+
+        if ii == nchunks:
+            end = nsamp
+
+        datagrabbed = data[:, start:end]
+        neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+        data[:, start:end] -= rfitemplate    
+
+    """
     if (klt_clean is True):
         nchunks = nsamp // klt_window
         for ii in tqdm(range(nchunks)):
@@ -128,7 +144,7 @@ def read_and_clean(filename,
         datagrabbed = data[:,nchunks * klt_window : -1]
         neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
         data[:,nchunks * klt_window : -1] = data[:,nchunks * klt_window : -1] - rfitemplate
-
+    """
     if int(nbits) == int(8):
         datawrite = data.T.astype("uint8")
     if int(nbits) == int(16):
