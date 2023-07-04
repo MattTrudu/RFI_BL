@@ -10,13 +10,7 @@ import os
 import sys
 import argparse
 
-def elements_for_10_percent_sum(array):
-    total_sum = np.sum(array)
-    target_sum = 0.1 * total_sum  # 10% of the total sum
-    sorted_indices = np.argsort(array)  # Sort the array indices in ascending order
-    cumulative_sum = np.cumsum(array[sorted_indices])  # Calculate cumulative sum
-    num_elements = np.searchsorted(cumulative_sum, target_sum, side='right') + 1
-    return num_elements
+
 
 def calc_N(channel_bandwidth, tsamp):
 
@@ -53,13 +47,14 @@ def sk_filter(data, channel_bandwidth, tsamp, N=None, d=None, sigma=5):
     bad_channels = ~mask
     return bad_channels
 
-def read_and_clean(filename, output_dir = os.getcwd(),  output_name = None ):
+def read_and_clean(filename,
+                   output_dir = os.getcwd(),
+                   output_name = None,
+                   sk_flag = False,
+                   sk_sig = 3
+                   ):
 
-    """
-    filename : name of the filterbankfile
-    outputname : name of the filterbank cleaned
-    gulp: number of time bins to read
-    """
+
 
     filedir, name = os.path.split(filename)
 
@@ -80,6 +75,11 @@ def read_and_clean(filename, output_dir = os.getcwd(),  output_name = None ):
     channels = np.arange(0, nchan)
 
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
+
+    if (sk_flag is True):
+        badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
+        data[badchans, :] = 0
+
 
     if int(nbits) == int(8):
         datawrite = data.T.astype("uint8")
@@ -102,7 +102,7 @@ def _get_parser():
         description = "Clean a SIGPROC filterbank file from RFI and produces a cleaned filterbank" + "\n"
                       "It performs an RFI excision in frequency via spectral kurtosis " + "\n"
                       "It performs an RFI excision in time via a Gaussian thresholding" + "\n"
-                      "It also makes an RFI template, computed via a PCA (KLT), which will be subtracted to the data" + "\n" 
+                      "It also makes an RFI template, computed via a PCA (KLT), which will be subtracted to the data" + "\n"
                       "It works only with > 8-bits filterbanks...")
     parser.add_argument('-f',
                         '--fil_file',
@@ -121,6 +121,18 @@ def _get_parser():
                         help = "Output File Name (Default: filename_cleaned.fil)",
                         default = None
                         )
+    parser.add_argument('-sk',
+                        '--spectral_kurtosis',
+                        help = "Find the bad channels via a spectral kurtosis (Bad channels will be set to zero). Default = False.",
+                        action = 'store_true',
+                        )
+    parser.add_argument('-sksig',
+                        '--spectral_kurtosis_sigma',
+                        type = int,
+                        default = 3,
+                        action = "store" ,
+                        help = "Sigma for the Spectral Kurtosis (Default: 3)"
+                        )
 
 
     return parser.parse_args()
@@ -133,11 +145,15 @@ if __name__ == '__main__':
     filename    = args.fil_file
     output_dir  = args.output_dir
     output_name = args.output_name
+    sk_flag     = args.spectral_kurtosis
+    sk_sig      = args.spectral_kurtosis_sigma
 
 
     read_and_clean(filename,
                 output_dir  = output_dir,
                 output_name = output_name,
+                sk_flag = sk_flag,
+                sk_sig = sk_sig
                 )
 
 
