@@ -71,6 +71,16 @@ def read_and_clean(filename, outputname, gulp):
     channels = np.arange(0, nchan)
 
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
+
+    tstart = 108.49
+    nstart = np.rint(tstart / dt).astype(np.int)
+    twin = 60*1e-3
+    nwin =  np.rint(twin / dt).astype(np.int)
+    plt.figure()
+    plt.imshow(data[:,nstart : nstart + nwin], aspect = "auto")
+    plt.xlabel("Time Bins")
+    plt.ylabel("Frequency Channels")
+    plt.savefig("zoom.png")
     spectrum = data.mean(1)
     badchans = sk_filter(data.T, df, dt, sigma=3)
 
