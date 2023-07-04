@@ -120,19 +120,19 @@ def read_and_clean(filename,
         data[badchans, :] = 0
 
     if klt_clean:
-    nchunks = nsamp // klt_window
-    remainder = nsamp % klt_window
+        nchunks = nsamp // klt_window
+        remainder = nsamp % klt_window
 
-    for ii in tqdm(range(nchunks + 1)):
-        start = ii * klt_window
-        end = start + klt_window
+        for ii in tqdm(range(nchunks + 1)):
+            start = ii * klt_window
+            end = start + klt_window
 
-        if ii == nchunks:
-            end = nsamp
+            if ii == nchunks:
+                end = nsamp
 
-        datagrabbed = data[:, start:end]
-        neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
-        data[:, start:end] -= rfitemplate    
+            datagrabbed = data[:, start:end]
+            neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+            data[:, start:end] -= rfitemplate
 
     """
     if (klt_clean is True):
