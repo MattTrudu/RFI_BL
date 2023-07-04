@@ -82,13 +82,10 @@ def read_and_clean(filename, output_dir = os.getcwd(),  output_name = None ):
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
 
     if int(nbits) == int(8):
-        print("Here 8 ")
         datawrite = data.T.astype("uint8")
     if int(nbits) == int(16):
-        print("Here 16 ")
         datawrite = data.T.astype("uint16")
     if int(nbits) == int(32):
-        print("Here 32 ")
         datawrite = data.T.astype("uint32")
 
 
@@ -102,7 +99,11 @@ def _get_parser():
     """
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="Clean a SIGPROC filterbank file from RFI and produces a cleaned filterbank. It works only with > 8-bits filterbanks...")
+        description = "Clean a SIGPROC filterbank file from RFI and produces a cleaned filterbank" + "\n"
+                      "It performs an RFI excision in frequency via spectral kurtosis " + "\n"
+                      "It performs an RFI excision in time via a Gaussian thresholding" + "\n"
+                      "It also makes an RFI template, computed via a PCA (KLT), which will be subtracted to the data" + "\n" 
+                      "It works only with > 8-bits filterbanks...")
     parser.add_argument('-f',
                         '--fil_file',
                         action = "store" ,
