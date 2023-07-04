@@ -72,28 +72,13 @@ def read_and_clean(filename, outputname, gulp):
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
     spectrum = data.mean(1)
     badchans = sk_filter(data.T, df, dt, sigma=3)
-    #data[badchans,:] = 0
-    data[200 : 511, :] = 0
-    baseline = np.mean(data, axis=0)
-    badbins = np.zeros(baseline.size, dtype=bool)
-
-    #detr = baseline
-
-    #ordered = np.sort(detr)
-    #q1 = ordered[baseline.size // 4]
-    #q2 = ordered[baseline.size // 2]
-    #q3 = ordered[baseline.size // 4 * 3]
-    #lowlim = q2 - 2 * (q2 - q1)
-    #hilim = q2 + 2 * (q3 - q2)
-
-    #badbins = (detr < lowlim) | (detr > hilim)
 
     timeseries = data.mean(0)
-    mu    = timeseries.mean() 
+    mu    = timeseries.mean()
     sigma = timeseries.std()
 
-    badbins = (timeseries < mu - 5 * sigma) | (timeseries > mu + 5 * sigma)
-
+    badbins = (baseline < mu - 3 * sigma) | (baseline > mu + 5 * sigma)
+    data[badchans,:] = 0
     data[:, badbins] = 0
     bins = np.arange(nsamp)
 
