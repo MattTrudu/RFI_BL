@@ -91,8 +91,7 @@ def read_and_clean(filename,
                    sk_sig = 3,
                    klt_clean = False,
                    var_frac = 0.3,
-                   klt_window = klt_window
-                   ):
+                   klt_window = klt_window):
 
 
 
@@ -216,7 +215,7 @@ if __name__ == '__main__':
     sk_sig      = args.spectral_kurtosis_sigma
     klt_clean   = args.karhunen_loeve_cleaning
     var_frac    = args.variance_fraction
-    klt_window  = args.klt_window
+    kltwindow  = args.klt_window
 
 
     read_and_clean(filename,
@@ -226,7 +225,7 @@ if __name__ == '__main__':
                 sk_sig = sk_sig,
                 klt_clean = klt_clean,
                 var_frac = var_frac,
-                klt_window = klt_window
+                klt_window = kltwindow
                 )
 
 
