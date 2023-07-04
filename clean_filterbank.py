@@ -7,6 +7,7 @@ from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
 import sys
+import argparse
 
 def elements_for_10_percent_sum(array):
     total_sum = np.sum(array)
@@ -51,13 +52,19 @@ def sk_filter(data, channel_bandwidth, tsamp, N=None, d=None, sigma=5):
     bad_channels = ~mask
     return bad_channels
 
-def read_and_clean(filename, outputname, gulp):
+def read_and_clean(filename, output_dir = os.getcwd(),  output_name = None ):
 
     """
     filename : name of the filterbankfile
     outputname : name of the filterbank cleaned
     gulp: number of time bins to read
     """
+
+    filedir, name = os.path.split(filename)
+
+    if output_name is None:
+        output_name = name.replace(".fil","") + "_cleaned" + ".fil"
+
 
     filterbank = FilReader(filename)
 
@@ -67,10 +74,69 @@ def read_and_clean(filename, outputname, gulp):
     df    = filterbank.header.foff
     dt    = filterbank.header.tsamp
 
-    outfile = filterbank.header.prepOutfile(outputname, back_compatible = True, nbits = nbits)
+    outfile = filterbank.header.prepOutfile(os.path.join(output_dir,output_name), back_compatible = True, nbits = nbits)
     channels = np.arange(0, nchan)
 
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
+
+    if nbits == 8:
+        datawrite = data.T.astype("uint8")
+    if nbits == 16:
+        datawrite = data.T.astype("uint16")
+    if nbits == 32:
+        datawrite = data.T.astype("uint32")
+    else:
+        raise ValueError("Invalid value for nbits. Supported values are 8, 16, and 32.")
+
+    outfile.cwrite(datawrite.ravel())
+
+    outfile.close()
+
+def _get_parser():
+    """
+    Argument parser.
+    """
+
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Clean a SIGPROC filterbank file from RFI and produces a cleaned filterbank. It works only with > 8-bits filterbanks...")
+    parser.add_argument('-f',
+                        '--fil_file',
+                        action = "store" ,
+                        help = "SIGPROC .fil file to be processed (REQUIRED)",
+                        required = True)
+    parser.add_argument('-o',
+                        '--output_dir',
+                        action = "store" ,
+                        help = "Output directory (Default: your current path)",
+                        default = "%s/"%(os.getcwd())
+                        )
+    parser.add_argument('-n',
+                        '--output_name',
+                        action = "store" ,
+                        help = "Output File Name (Default: filename_cleaned.fil)",
+                        default = None)
+                        )
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+
+    args = _get_parser()
+
+    filename   = args.fil_file
+    output_dir = args.output_dir
+    outname    = args.output_name
+
+
+    read_and_clean(filename,
+                output_dir  = output_dir,
+                output_name = output_name,
+                )
+
+
+
+    """
 
     tstart = 108.49
     nstart = np.rint(tstart / dt).astype(np.int)
@@ -104,7 +170,7 @@ def read_and_clean(filename, outputname, gulp):
     plt.plot(channels[badchans], spectrum[badchans], "o")
     plt.savefig(f"spec.png")
 
-    """
+
 
     nchunks = nsamp // gulp
     channels = np.arange(0, nchan)
@@ -125,20 +191,3 @@ def read_and_clean(filename, outputname, gulp):
     badchans = sk_filter(dataproc.T, df, dt, sigma=4)
     data[badchans, nchunks * gulp : -1] = 0
     """
-
-    datawrite = data.T.astype("uint8")
-    outfile.cwrite(datawrite.ravel())
-
-    outfile.close()
-
-    #datawrite = data.T.astype("uint8")
-    #outfile.cwrite(datawrite.ravel())
-
-
-
-if __name__ == '__main__':
-
-    filename = sys.argv[1]
-    outputname = sys.argv[2]
-
-    read_and_clean(filename, outputname,4096)
