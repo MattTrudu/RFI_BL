@@ -91,7 +91,7 @@ def read_and_clean(filename,
                    sk_sig = 3,
                    klt_clean = False,
                    var_frac = 0.3,
-                   klt_window = klt_window):
+                   klt_window = 1024):
 
 
 
