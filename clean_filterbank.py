@@ -77,21 +77,24 @@ def read_and_clean(filename, outputname, gulp):
     baseline = np.mean(data, axis=0)
     badbins = np.zeros(baseline.size, dtype=bool)
 
-    detr = baseline
+    #detr = baseline
 
-    ordered = np.sort(detr)
-    q1 = ordered[baseline.size // 4]
-    q2 = ordered[baseline.size // 2]
-    q3 = ordered[baseline.size // 4 * 3]
-    lowlim = q2 - 2 * (q2 - q1)
-    hilim = q2 + 2 * (q3 - q2)
+    #ordered = np.sort(detr)
+    #q1 = ordered[baseline.size // 4]
+    #q2 = ordered[baseline.size // 2]
+    #q3 = ordered[baseline.size // 4 * 3]
+    #lowlim = q2 - 2 * (q2 - q1)
+    #hilim = q2 + 2 * (q3 - q2)
 
-    badbins = (detr < lowlim) | (detr > hilim)
-
-    data[:, badbins] = 0
-
+    #badbins = (detr < lowlim) | (detr > hilim)
 
     timeseries = data.mean(0)
+    mu    = timeseries.mean() 
+    sigma = timeseries.std()
+
+    badbins = (timeseries < mu - 5 * sigma) | (timeseries > mu + 5 * sigma)
+
+    data[:, badbins] = 0
     bins = np.arange(nsamp)
 
     plt.figure()
