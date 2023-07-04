@@ -74,6 +74,10 @@ def read_and_clean(filename, outputname, gulp):
     badchans = sk_filter(data.T, df, dt, sigma=3)
     #data[badchans,:] = 0
     data[200 : 511, :] = 0
+    timeseries = data.mean(0)
+    plt.figure()
+    plt.plot(timeseries)
+    plt.savefig(f"ts.png")
     plt.figure()
     plt.plot(channels, spectrum)
     plt.plot(channels[badchans], spectrum[badchans], "o")
