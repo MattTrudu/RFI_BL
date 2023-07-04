@@ -82,13 +82,15 @@ def read_and_clean(filename, output_dir = os.getcwd(),  output_name = None ):
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
 
     if int(nbits) == int(8):
+        print("Here 8 ")
         datawrite = data.T.astype("uint8")
     if int(nbits) == int(16):
+        print("Here 16 ")
         datawrite = data.T.astype("uint16")
     if int(nbits) == int(32):
+        print("Here 32 ")
         datawrite = data.T.astype("uint32")
-    else:
-        raise ValueError("Invalid value for nbits. Supported values are 8, 16, and 32.")
+
 
     outfile.cwrite(datawrite.ravel())
 
