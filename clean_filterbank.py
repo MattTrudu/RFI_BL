@@ -78,7 +78,7 @@ def read_and_clean(filename, outputname, gulp):
     mu    = timeseries.mean()
     sigma = timeseries.std()
 
-    baseline = gaussian_filter(baseline, 101, truncate = 1)
+    baseline = gaussian_filter(timeseries, 101, truncate = 1)
     badbins = (baseline < mu - 4 * sigma) | (baseline > mu + 4 * sigma)
     data[badchans,:] = 0
     data[:, badbins] = 0
