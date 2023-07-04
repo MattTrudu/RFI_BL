@@ -74,18 +74,18 @@ def read_and_clean(filename, output_dir = os.getcwd(),  output_name = None ):
     nbits = filterbank.header.nbits
     df    = filterbank.header.foff
     dt    = filterbank.header.tsamp
-    print(nbits)
+
 
     outfile = filterbank.header.prepOutfile(os.path.join(output_dir,output_name), back_compatible = True, nbits = nbits)
     channels = np.arange(0, nchan)
 
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
 
-    if nbits == 8:
+    if int(nbits) == int(8):
         datawrite = data.T.astype("uint8")
-    if nbits == 16:
+    if int(nbits) == int(16):
         datawrite = data.T.astype("uint16")
-    if nbits == 32:
+    if int(nbits) == int(32):
         datawrite = data.T.astype("uint32")
     else:
         raise ValueError("Invalid value for nbits. Supported values are 8, 16, and 32.")
