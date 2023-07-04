@@ -73,7 +73,7 @@ def read_and_clean(filename, outputname, gulp):
     spectrum = data.mean(1)
     badchans = sk_filter(data.T, df, dt, sigma=3)
     #data[badchans,:] = 0
-    data[256 : 511, :] = 0
+    data[200 : 511, :] = 0
     plt.figure()
     plt.plot(channels, spectrum)
     plt.plot(channels[badchans], spectrum[badchans], "o")
