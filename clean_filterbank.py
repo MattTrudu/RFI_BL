@@ -5,6 +5,7 @@ from sigpyproc.Readers import FilReader
 from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
+from scipy.ndimage import gaussian_filter
 import sys
 
 def elements_for_10_percent_sum(array):
@@ -77,7 +78,8 @@ def read_and_clean(filename, outputname, gulp):
     mu    = timeseries.mean()
     sigma = timeseries.std()
 
-    badbins = (baseline < mu - 3 * sigma) | (baseline > mu + 5 * sigma)
+    baseline = gaussian_filter(baseline, 101, truncate = 1)
+    badbins = (baseline < mu - 4 * sigma) | (baseline > mu + 4 * sigma)
     data[badchans,:] = 0
     data[:, badbins] = 0
     bins = np.arange(nsamp)
