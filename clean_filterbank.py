@@ -6,7 +6,7 @@ from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
-import os 
+import os
 import sys
 import argparse
 
@@ -126,9 +126,9 @@ if __name__ == '__main__':
 
     args = _get_parser()
 
-    filename   = args.fil_file
-    output_dir = args.output_dir
-    outname    = args.output_name
+    filename    = args.fil_file
+    output_dir  = args.output_dir
+    output_name = args.output_name
 
 
     read_and_clean(filename,
