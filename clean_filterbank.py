@@ -74,9 +74,29 @@ def read_and_clean(filename, outputname, gulp):
     badchans = sk_filter(data.T, df, dt, sigma=3)
     #data[badchans,:] = 0
     data[200 : 511, :] = 0
+    baseline = np.mean(data, axis=0)
+    badbins = np.zeros(baseline.size, dtype=bool)
+
+    detr = baseline
+
+    ordered = np.sort(detr)
+    q1 = ordered[baseline.size // 4]
+    q2 = ordered[baseline.size // 2]
+    q3 = ordered[baseline.size // 4 * 3]
+    lowlim = q2 - 2 * (q2 - q1)
+    hilim = q2 + 2 * (q3 - q2)
+
+    badbins = (detr < lowlim) | (detr > hilim)
+
+    data[:, badbins] = 0
+
+
     timeseries = data.mean(0)
+    bins = np.arange(nsamp)
+
     plt.figure()
     plt.plot(timeseries)
+    plt.plot(bins[badbins], timeseries[badbins], "o")
     plt.savefig(f"ts.png")
     plt.figure()
     plt.plot(channels, spectrum)
