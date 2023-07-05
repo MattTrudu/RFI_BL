@@ -78,20 +78,20 @@ def plot_data(
     time = np.linspace(0, nsamp * dt, nsamp)
 
     if grab_time:
-        tstart = int(time_start / dt)
-        tstop = int(time_stop / dt)
-        if tstart < 0:
-            tstart = 0
-        if tstop > nsamp:
-            tstop = nsamp
-        data = filterbank.readBlock(tstart, tstop)
-        time = time[tstart:tstop]
+        if tstart < time[0]:
+            tstart = time[0]
+        if tstop > time[-1]:
+            tstop = time[-1]
+        nstart = np.rint(time_start / dt).astype(np.int)
+        nstop = np.int(time_stop / dt).astype(np.int)
+        data = filterbank.readBlock(nstart, nstop)
+        time = time[nstart:nstop]
     else:
         data = filterbank.readBlock(0, nsamp)
 
     if grab_channels:
         cstart = int(channel_start)
-        cstop = int(channel_stop)
+        cstop  = int(channel_stop)
         if cstart < 0:
             cstart = 0
         if cstop > nchan:
