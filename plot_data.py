@@ -142,7 +142,7 @@ def plot_data(
     ax11.plot(np.flipud(spectrum), channels)
 
     if save_flag:
-        output_name = output_name + file_format
+        output_name = f"{output_name}{file_format}"
         plt.savefig(os.path.join(output_dir, output_name))
     else:
         plt.show()
