@@ -2,6 +2,7 @@ import sys
 import os
 import argparse
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sigpyproc.Filterbank import Filterbank
 from sigpyproc.Readers import FilReader
