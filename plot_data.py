@@ -100,7 +100,7 @@ def plot_data(filename,
 
     size = 15
 
-    ax10.margins(x = 0)
+    ax00.margins(x = 0)
     ax11.margins(y = 0)
     ax10.tick_params(labelsize  = size)
     ax10.tick_params(labelsize  = size)
@@ -111,7 +111,7 @@ def plot_data(filename,
 
     ax10.imshow(data , aspect = "auto", extent = (time[0], time[-1], freqs[-1], freqs[0]))
     ax00.plot(time, timeseries, color = "black")
-    ax11.plot(spectrum,channels)
+    ax11.plot(np.flipud(spectrum),channels)
 
 
     if (save_flag is False):
