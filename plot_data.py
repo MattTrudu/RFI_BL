@@ -84,8 +84,8 @@ def plot_data(
             time_start = time[0]
         if time_stop > time[-1]:
             time_stop = time[-1]
-        nstart = np.rint(time_start / dt).astype(np.int)
-        nstop = np.rint(time_stop / dt).astype(np.int)
+        nstart = int(time_start / dt)
+        nstop = int(time_stop / dt)
         time = time[nstart:nstop]
         data = data[:, nstart : nstop]
 
