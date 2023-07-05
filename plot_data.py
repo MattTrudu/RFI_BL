@@ -53,8 +53,7 @@ def plot_data(filename,
                    save_flag = True,
                    file_format = ".png",
                    tstart = 0,
-                   tstop  = 1
-                   ):
+                   tstop  = 1):
 
 
     filedir, name = os.path.split(filename)
@@ -76,7 +75,7 @@ def plot_data(filename,
     time  = np.linspace(0, nsamp * dt)
 
     if (grab_flag is False):
-
+        print("Here")
         data = filterbank.readBlock(0, nsamp)
         timeseries = np.mean(data, axis = 0)
         spectrum   = np.mean(data, axis = 1)
