@@ -66,7 +66,7 @@ def plot_data(filename,
     df    = filterbank.header.foff
     dt    = filterbank.header.tsamp
     ftop  = filterbank.header.ftop
-    fbot  = filterbank.header.fbot
+    fbot  = filterbank.header.fbottom
     fc    = filterbank.header.fcenter
 
     channels = np.arange(0,nchan,1)
