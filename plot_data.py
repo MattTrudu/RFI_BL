@@ -51,9 +51,7 @@ def plot_data(filename,
                    output_name = "candidate",
                    grab_flag = False,
                    save_flag = True,
-                   file_format = ".png",
-                   tstart = 0,
-                   tstop  = 1):
+                   file_format = ".png"):
 
 
     filedir, name = os.path.split(filename)
@@ -72,10 +70,9 @@ def plot_data(filename,
     channels = np.arange(0,nchan,1)
 
     freqs = np.linspace(ftop, fbot, nchan)
-    time  = np.linspace(0, nsamp * dt)
+    time  = np.linspace(0, nsamp * dt, nsamp)
 
     if (grab_flag is False):
-        print("Here")
         data = filterbank.readBlock(0, nsamp)
         timeseries = np.mean(data, axis = 0)
         spectrum   = np.mean(data, axis = 1)
@@ -185,7 +182,4 @@ if __name__ == '__main__':
                        output_name = output_name,
                        grab_flag = grab_flag,
                        save_flag = save_flag,
-                       file_format = fileformat,
-                       tstart = 0,
-                       tstop  = 1
-                       )
+                       file_format = fileformat)
