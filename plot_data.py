@@ -77,6 +77,8 @@ def plot_data(
     freqs = np.linspace(ftop, fbot, nchan)
     time = np.linspace(0, nsamp * dt, nsamp)
 
+    data = filterbank.readBlock(0, nsamp)
+
     if grab_time:
         if time_start < time[0]:
             time_start = time[0]
@@ -84,15 +86,9 @@ def plot_data(
             time_stop = time[-1]
         nstart = np.rint(time_start / dt).astype(np.int)
         nstop = np.rint(time_stop / dt).astype(np.int)
-        print(nstart, nstop, nsamp)
-        data = filterbank.readBlock(nstart, nstop)
         time = time[nstart:nstop]
-        timeseries = np.mean(data, axis=0)
-        spectrum = np.mean(data, axis=1)
-    else:
-        data = filterbank.readBlock(0, nsamp)
-        timeseries = np.mean(data, axis=0)
-        spectrum = np.mean(data, axis=1)
+        data = data[:, nstart : nstop]
+
 
     if grab_channels:
         cstart = int(channel_start)
@@ -103,8 +99,9 @@ def plot_data(
             cstop = nchan
         data = data[cstart:cstop,:]
         channels = channels[cstart:cstop]
-        timeseries = np.mean(data, axis=0)
-        spectrum = np.mean(data, axis=1)
+
+    timeseries = np.mean(data, axis=0)
+    spectrum = np.mean(data, axis=1)
 
     fig = plt.figure(figsize=(15, 10))
     mpl.rcParams["axes.linewidth"] = 1.0
