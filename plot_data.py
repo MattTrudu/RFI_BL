@@ -46,6 +46,202 @@ def dedisperse(wfall, DM, freq, dt, ref_freq="top"):
         dedisp[i] = np.roll(ts, shift[i])
     return dedisp
 
+def plot_data(
+    filename,
+    output_dir=os.getcwd(),
+    output_name="candidate",
+    grab_time=False,
+    time_start=None,
+    time_stop=None,
+    grab_channels=False,
+    channel_start=None,
+    channel_stop=None,
+    save_flag=True,
+    file_format=".png",
+):
+    filedir, name = os.path.split(filename)
+
+    filterbank = FilReader(filename)
+
+    nsamp = filterbank.header.nsamples
+    nchan = filterbank.header.nchans
+    nbits = filterbank.header.nbits
+    df = filterbank.header.foff
+    dt = filterbank.header.tsamp
+    ftop = filterbank.header.ftop
+    fbot = filterbank.header.fbottom
+    fc = filterbank.header.fcenter
+
+    channels = np.arange(0, nchan, 1)
+
+    freqs = np.linspace(ftop, fbot, nchan)
+    time = np.linspace(0, nsamp * dt, nsamp)
+
+    if grab_time:
+        tstart = int(time_start / dt)
+        tstop = int(time_stop / dt)
+        if tstart < 0:
+            tstart = 0
+        if tstop > nsamp:
+            tstop = nsamp
+        data = filterbank.readBlock(tstart, tstop)
+        time = time[tstart:tstop]
+    else:
+        data = filterbank.readBlock(0, nsamp)
+
+    if grab_channels:
+        cstart = int(channel_start)
+        cstop = int(channel_stop)
+        if cstart < 0:
+            cstart = 0
+        if cstop > nchan:
+            cstop = nchan
+        data = data[:, cstart:cstop]
+        channels = channels[cstart:cstop]
+
+    timeseries = np.mean(data, axis=0)
+    spectrum = np.mean(data, axis=1)
+
+    fig = plt.figure(figsize=(15, 10))
+    mpl.rcParams["axes.linewidth"] = 1.0
+
+    plt.subplots_adjust(top=0.99, bottom=0.1, right=0.99, left=0.1)
+
+    widths = [0.8, 0.2]
+    heights = [0.2, 0.8]
+    gs = plt.GridSpec(
+        2, 2, hspace=0.0, wspace=0, width_ratios=widths, height_ratios=heights
+    )
+
+    ax00 = plt.subplot(gs[0, 0])
+    ax10 = plt.subplot(gs[1, 0])
+    ax11 = plt.subplot(gs[1, 1])
+
+    ax00.set_xticks([])
+    ax00.set_yticks([])
+    ax11.set_xticks([])
+    ax11.set_yticks([])
+
+    size = 15
+
+    ax00.margins(x=0)
+    ax11.margins(y=0)
+    ax10.tick_params(labelsize=size)
+    ax10.tick_params(labelsize=size)
+    ax10.set_ylabel("Frequency (MHz)", size=size)
+    ax10.set_xlabel("Time (s)", size=size)
+
+    fig.align_labels()
+
+    ax10.imshow(
+        data,
+        aspect="auto",
+        extent=(time[0], time[-1], freqs[channels[-1]], freqs[channels[0]]),
+    )
+    ax00.plot(time, timeseries, color="black")
+    ax11.plot(np.flipud(spectrum), channels)
+
+    if save_flag:
+        output_name = output_name + file_format
+        plt.savefig(os.path.join(output_dir, output_name))
+    else:
+        plt.show()
+
+
+def _get_parser():
+    """
+    Argument parser.
+    """
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Read a SIGPROC filterbank file and plot a portion of the data",
+    )
+    parser.add_argument(
+        "-f",
+        "--fil_file",
+        action="store",
+        help="SIGPROC .fil file to be processed (REQUIRED).",
+        required=True,
+    )
+    parser.add_argument(
+        "-o",
+        "--output_dir",
+        action="store",
+        help="Output directory (Default: your current path).",
+        default="%s/" % (os.getcwd()),
+    )
+    parser.add_argument(
+        "-n",
+        "--output_name",
+        action="store",
+        help="Output File Name (Default: filename_cleaned.fil).",
+        default=None,
+    )
+    parser.add_argument(
+        "-s",
+        "--save_data",
+        help="Save the candidate plot. (Default = True).",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-t",
+        "--grab_time",
+        help="Grab a portion of the data in time (s). Usage -t tstart tstop (Default = False).",
+        nargs=2,
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "-c",
+        "--grab_channels",
+        help="Grab a portion of the data in frequency channels. Usage -c cstart cstop (Default = False).",
+        nargs=2,
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "-ff",
+        "--file_format",
+        action="store",
+        help="Format of the candidate image (Default: .png).",
+        default=".png",
+    )
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+
+    args = _get_parser()
+
+    filename = args.fil_file
+    output_dir = args.output_dir
+    output_name = args.output_name
+    save_flag = args.save_data
+    grab_time = args.grab_time is not None
+    time_start, time_stop = args.grab_time or (None, None)
+    grab_channels = args.grab_channels is not None
+    channel_start, channel_stop = args.grab_channels or (None, None)
+    fileformat = args.file_format
+
+    plot_data(
+        filename,
+        output_dir=output_dir,
+        output_name=output_name,
+        grab_time=grab_time,
+        time_start=time_start,
+        time_stop=time_stop,
+        grab_channels=grab_channels,
+        channel_start=channel_start,
+        channel_stop=channel_stop,
+        save_flag=save_flag,
+        file_format=fileformat,
+    )
+
+
+
+"""
+
 def plot_data(filename,
                    output_dir = os.getcwd(),
                    output_name = "candidate",
@@ -76,7 +272,11 @@ def plot_data(filename,
         data = filterbank.readBlock(0, nsamp)
         timeseries = np.mean(data, axis = 0)
         spectrum   = np.mean(data, axis = 1)
-
+    else:
+        nstart =
+        data = filterbank.readBlock(0, nsamp)
+        timeseries = np.mean(data, axis = 0)
+        spectrum   = np.mean(data, axis = 1)
 
 
     fig = plt.figure(figsize = (15,10))
@@ -151,9 +351,14 @@ def _get_parser():
                         help = "Save the candidate plot. (Default = True).",
                         action = 'store_true',
                         )
-    parser.add_argument('-g',
-                        '--grab_data',
-                        help = "Grab a portion of the data (Default = False).",
+    parser.add_argument('-t',
+                        '--time_grab',
+                        help = "Grab a portion of the data in time (s). Usage -t tstart tstop (Default = False).",
+                        action = 'store_true',
+                        )
+    parser.add_argument('-c',
+                        '--chan_grab',
+                        help = "Grab a portion of the data in frequency channels. Usage -c cstart cstop (Default = False).",
                         action = 'store_true',
                         )
     parser.add_argument('-ff',
@@ -174,7 +379,8 @@ if __name__ == '__main__':
     output_dir  = args.output_dir
     output_name = args.output_name
     save_flag   = args.save_data
-    grab_flag   = args.grab_data
+    time_grab   = args.time_grab
+    chan_grab   = args.chan_grab
     fileformat  = args.file_format
 
     plot_data(filename,
@@ -183,3 +389,4 @@ if __name__ == '__main__':
                        grab_flag = grab_flag,
                        save_flag = save_flag,
                        file_format = fileformat)
+"""
