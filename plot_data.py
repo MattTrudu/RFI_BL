@@ -78,10 +78,10 @@ def plot_data(
     time = np.linspace(0, nsamp * dt, nsamp)
 
     if grab_time:
-        if tstart < time[0]:
-            tstart = time[0]
-        if tstop > time[-1]:
-            tstop = time[-1]
+        if time_start < time[0]:
+            time_start = time[0]
+        if time_stop > time[-1]:
+            time_stop = time[-1]
         nstart = np.rint(time_start / dt).astype(np.int)
         nstop = np.int(time_stop / dt).astype(np.int)
         data = filterbank.readBlock(nstart, nstop)
