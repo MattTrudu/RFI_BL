@@ -83,7 +83,7 @@ def plot_data(
         if time_stop > time[-1]:
             time_stop = time[-1]
         nstart = np.rint(time_start / dt).astype(np.int)
-        nstop = np.int(time_stop / dt).astype(np.int)
+        nstop = np.rint(time_stop / dt).astype(np.int)
         data = filterbank.readBlock(nstart, nstop)
         time = time[nstart:nstop]
     else:
