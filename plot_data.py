@@ -157,7 +157,7 @@ def _get_parser():
     parser.add_argument('-g',
                         '--grab_data',
                         help = "Grab a portion of the data (Default = False).",
-                        action = 'store_false',
+                        action = 'store_true',
                         )
     parser.add_argument('-ff',
                         '--file_format',
