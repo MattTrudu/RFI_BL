@@ -96,7 +96,7 @@ def plot_data(
             cstart = 0
         if cstop > nchan:
             cstop = nchan
-        data = data[:, cstart:cstop]
+        data = data[cstart:cstop,:]
         channels = channels[cstart:cstop]
 
     timeseries = np.mean(data, axis=0)
@@ -138,7 +138,7 @@ def plot_data(
         aspect="auto",
         extent=(time[0], time[-1], freqs[channels[-1]], freqs[channels[0]]),
     )
-    ax00.plot(time, timeseries, color="black")
+    ax00.plot(time, timeseries, color = "black")
     ax11.plot(np.flipud(spectrum), channels)
 
     if save_flag:
