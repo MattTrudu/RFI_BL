@@ -124,9 +124,12 @@ def plot_candidate(filename,
 
     data = filterbank.readBlock(ncand, ndelay)
 
+    dedispdata = dedisperse(data, dmcand, freqs, dt, ref_freq = "center")
+
     if (sk_flag is True):
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
-        data[badchans, :] = 0
+        data[badchans, :] = np.nan
+        dedispdata[badchans,:] = np.nan
 
     figure = plt.figure(figsize = (10,7))
     size = 12
@@ -168,6 +171,8 @@ def plot_candidate(filename,
 
     ax1_20.set_ylabel("Frequency (MHz)", size = size)
     ax1_20.set_xlabel("Time (s)", size = size)
+
+    ax1_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]), cmap = "inferno")
 
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
