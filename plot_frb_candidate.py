@@ -137,6 +137,8 @@ def _get_parser():
 
 if __name__ == "__main__":
 
+    args = _get_parser()
+
     filename = args.fil_file
     output_dir = args.output_dir
     output_name = args.output_name
