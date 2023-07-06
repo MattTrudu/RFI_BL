@@ -181,7 +181,7 @@ def plot_candidate(filename,
 
     timeseries = np.nansum(dedispdata, axis=0)
 
-    peak, width, snr = find_burst(ts)
+    peak, width, snr = find_burst(timeseries)
     print(f"Peak: {peak} at time sample, Width = {width*dt} ms, SNR = {snr}")
 
     figure = plt.figure(figsize = (10,7))
