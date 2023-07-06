@@ -83,6 +83,8 @@ def plot_candidate(filename,
 
     data = filterbank.readBlock(ncand, ncand + ndelay)
 
+    print(data.shape)
+
     plt.figure(figsize = (10,5))
 
     plt.imshow(data, aspect = "auto")
