@@ -232,6 +232,8 @@ def plot_candidate(filename,
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
+    figure.text(0.700,0.700, "Ciao :)" ,fontsize = size)
+
     if save_flag:
         output_name = f"{output_name}.{format_file}"
         plt.savefig(os.path.join(output_dir, output_name))
