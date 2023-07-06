@@ -220,8 +220,7 @@ def plot_candidate(filename,
 
     width, width_err = get_width(time,timeseries,2.355)
     wsamp = np.rint(width / dt).astype("int")
-    snr = get_snr(timeseries, wsamp)
-    print(width*1e3, wsamp)
+
 
 
 
@@ -289,6 +288,7 @@ def plot_candidate(filename,
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
     figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
     figure.text(0.650,0.750, f"Candidate peak S/N = {timeseries.max():.2f}" ,fontsize = 10)
+    figure.text(0.650,0.725, f"Candidate FWHM width (ms) = {width*1e3:.2f}" ,fontsize = 10)
 
 
     username = getpass.getuser()
