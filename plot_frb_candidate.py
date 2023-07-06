@@ -93,7 +93,8 @@ def plot_candidate(filename,
     format_file = ".png",
     save_flag = False,
     sk_flag = False,
-    sk_sig = 3
+    sk_sig = 3,
+    twin = 100
     ):
 
     filedir, name = os.path.split(filename)
@@ -123,8 +124,16 @@ def plot_candidate(filename,
     ndelay = np.rint(delay / dt).astype("int")
 
     data = filterbank.readBlock(ncand, ndelay)
-
     dedispdata = dedisperse(data, dmcand, freqs, dt, ref_freq = "center")
+
+    #Center the burst around a window (in ms)
+
+    delayc  = dispersion_delay(fbot, fc, dms = dmcand)
+    ndelayc = np.rint(delayc / dt).astype("int")
+    twin    = twin * 1e-3 # width in ms
+    nwin    = np.rint(twin / dt / 2).astype("int")
+
+    dedispdata = dedispdata[:, ndelayc - nwin : ndelayc + nwin]
 
     if (sk_flag is True):
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
@@ -211,7 +220,14 @@ def _get_parser():
         "--dm_cand",
         type = float,
         help = "Dispersion measure of the candidate in pc cm^-3.",
-        default = 0,
+        required = True,
+    )
+    parser.add_argument(
+        "-tw",
+        "--time_window",
+        type = float,
+        help = "Time window to grab and plot around the dedispersed burst (Default: 100 ms)",
+        default = 100,
     )
     parser.add_argument(
         "-o",
@@ -254,6 +270,7 @@ if __name__ == "__main__":
     fileformat  = args.file_format
     tcand       = args.time_cand
     dmcand      = args.dm_cand
+    twin        = args.time_window
 
     plot_candidate(filename,
         tcand = tcand,
@@ -261,5 +278,6 @@ if __name__ == "__main__":
         output_dir = os.getcwd(),
         output_name = "candidate",
         format_file = "png",
-        save_flag = save_flag
+        save_flag = save_flag,
+        twin = twin
         )
