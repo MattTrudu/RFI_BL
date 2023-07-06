@@ -91,7 +91,7 @@ def plot_candidate(filename,
     output_dir = os.getcwd(),
     output_name = "candidate",
     format_file = ".png",
-    save_flag=True,
+    save_flag = False,
     sk_flag = False,
     sk_sig = 3
     ):
@@ -123,8 +123,6 @@ def plot_candidate(filename,
     ndelay = np.rint(delay / dt).astype("int")
 
     data = filterbank.readBlock(ncand, ndelay)
-
-    print(data.shape)
 
     if (sk_flag is True):
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
