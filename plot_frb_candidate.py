@@ -83,7 +83,7 @@ def plot_candidate(filename,
 
     print(ncand, ndelay)
 
-    data = filterbank.readBlock(ncand, ncand + ndelay)
+    data = filterbank.readBlock(ncand, ndelay)
 
     print(data.shape)
 
