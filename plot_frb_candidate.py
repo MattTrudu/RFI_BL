@@ -123,17 +123,16 @@ def plot_candidate(filename,
     ncand  = np.rint(tcand / dt).astype("int")
     ndelay = np.rint(delay / dt).astype("int")
 
-    data = filterbank.readBlock(ncand, ndelay)
+    data = filterbank.readBlock(ncand - ndelay, 2 * ndelay)
     dedispdata = dedisperse(data, dmcand, freqs, dt, ref_freq = "center")
 
     #Center the burst around a window (in ms)
 
-    delayc  = dispersion_delay(fbot, fc, dms = dmcand)
-    ndelayc = np.rint(delayc / dt).astype("int")
     twin    = twin * 1e-3 # width in ms
     nwin    = np.rint(twin / dt / 2).astype("int")
 
-    dedispdata = dedispdata[:, ndelayc - nwin : ndelayc + nwin]
+    dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
+    data = data[:, ndelay : -1]
 
     if (sk_flag is True):
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
