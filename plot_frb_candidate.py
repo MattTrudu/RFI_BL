@@ -114,7 +114,10 @@ def plot_candidate(filename,
     freqs = np.linspace(ftop, fbot, nchan)
     time = np.linspace(0, nsamp * dt, nsamp)
 
-    delay = dispersion_delay(fbot, ftop, dms = dmcand)
+    if dmcand == 0:
+        delay = 1
+    else:
+        delay = dispersion_delay(fbot, ftop, dms = dmcand)
 
     ncand  = np.rint(tcand / dt).astype("int")
     ndelay = np.rint(delay / dt).astype("int")
