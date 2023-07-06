@@ -180,6 +180,9 @@ def plot_candidate(filename,
     ax1_20.set_ylabel("Frequency (MHz)", size = size)
     ax1_20.set_xlabel("Time (s)", size = size)
 
+    dedispdata[np.isnan(wfall)] = np.nanmedian(dedispdata)
+    data[np.isnan(wfall)] = np.nanmedian(data)
+
     vmin = np.nanpercentile(dedispdata, 1)
     vmax = np.nanpercentile(dedispdata, 99)
     ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]),
