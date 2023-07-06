@@ -186,10 +186,10 @@ def plot_candidate(filename,
     vmin = np.nanpercentile(dedispdata, 1)
     vmax = np.nanpercentile(dedispdata, 99)
     ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]),
-                    cmap = "inferno", interpolation="none")
+                    cmap = "inferno")
     vmin = np.nanpercentile(data, 1)
     vmax = np.nanpercentile(data, 99)
-    ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno", interpolation="none")
+    ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
