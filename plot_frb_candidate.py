@@ -184,7 +184,7 @@ def plot_candidate(filename,
         dedispdata[badchans,:] = np.nan
 
     timeseries = np.nansum(dedispdata, axis=0)
-    bwidth, mvalues = find_best_boxcar_width(timeseries, 1, timeseries.shape[0])
+    bwidth, mvalues = find_best_boxcar_width(timeseries, 1, 100)
 
     figure = plt.figure(figsize = (10,7))
     size = 12
