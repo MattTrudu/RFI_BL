@@ -78,8 +78,8 @@ def plot_candidate(filename,
 
     delay = dispersion_delay(fbot, ftop, dms = dmcand)
 
-    ncand  = int(tcand // dt)
-    ndelay = int(delay // dt)
+    ncand  = np.rint(tcand / dt).astype("int")
+    ndelay = np.rint(delay / dt).astype("int")
 
     print(ncand, ndelay)
 
