@@ -232,7 +232,9 @@ def plot_candidate(filename,
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
-    figure.text(0.700,0.700, "Ciao :)" ,fontsize = size)
+    figure.text(0.650,0.950, "File Information" ,fontsize = 10)
+    figure.text(0.650,0.925, f"File name: {name}" ,fontsize = 10)
+    figure.text(0.650,0.900, f"File directory: {filedir}" ,fontsize = 10)
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
