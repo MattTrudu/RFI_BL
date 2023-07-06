@@ -181,7 +181,7 @@ def _get_parser():
     parser.add_argument(
         "-s",
         "--save_data",
-        help="Save the candidate plot. (Default = True).",
+        help="Save the candidate plot.",
         action="store_true",
     )
     parser.add_argument(
