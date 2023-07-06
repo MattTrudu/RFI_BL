@@ -49,7 +49,7 @@ def dedisperse(wfall, DM, freq, dt, ref_freq="top"):
 def plot_data(
     filename,
     output_dir=os.getcwd(),
-    output_name="candidate",
+    output_name="data",
     grab_time=False,
     time_start=None,
     time_stop=None,
@@ -175,7 +175,7 @@ def _get_parser():
         "-n",
         "--output_name",
         action="store",
-        help="Output File Name (Default: filename_cleaned.fil).",
+        help="Output File Name (Default: data.png).",
         default=None,
     )
     parser.add_argument(

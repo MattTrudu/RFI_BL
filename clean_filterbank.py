@@ -116,7 +116,7 @@ def read_and_clean(filename,
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
 
     if (sk_flag is True):
-        badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
+        badchans = sk_filter(data.T[0:4096*4,:], df, dt, sigma = sk_sig)
         data[badchans, :] = 0
     """
     datatest = data[:, 0 : klt_window]
