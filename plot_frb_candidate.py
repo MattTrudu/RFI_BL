@@ -7,6 +7,7 @@ from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
+import getpass
 from tqdm import tqdm
 import os
 import sys
@@ -232,9 +233,16 @@ def plot_candidate(filename,
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
-    figure.text(0.650,0.950, "File Information" ,fontsize = 10)
-    figure.text(0.650,0.925, f"File name: {name}" ,fontsize = 10)
-    figure.text(0.650,0.900, f"File directory: {filedir}" ,fontsize = 10)
+    figure.text(0.650,0.950, f"File Information" ,fontsize = 10)
+
+    figure.text(0.650,0.900, f"File name: {name}" ,fontsize = 10)
+    figure.text(0.650,0.875, f"File directory: {filedir}" ,fontsize = 10)
+
+    figure.text(0.650,0.850, f"Candidate Information" ,fontsize = 10)
+
+    username = getpass.getuser()
+    datetimenow = datetime.utcnow()
+    figure.text(0.75,0.020,"Plot made by %s on %s UTC"%(username,str(datetimenow)[0:19]), fontsize = size)
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
