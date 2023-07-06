@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sigpyproc.Filterbank import Filterbank
 from sigpyproc.Readers import FilReader
-import scipy 
+import scipy
 from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
@@ -116,7 +116,7 @@ def renormalize_data(array):
 
 def boxcar_kernel(width):
     width = int(round(width, 0))
-    return np.ones(width, dtype="float32") / np.sqrt(width)
+    return np.ones(width, dtype="float32") / width
 
 def find_burst(ts, min_width=1, max_width=128):
     min_width = int(min_width)
