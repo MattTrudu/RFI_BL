@@ -159,8 +159,6 @@ def plot_candidate(filename,
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
 
-    timeseries = np.nansum(data, axis=0)
-
     #Center the burst around a window (in ms)
 
     twin    = twin * 1e-3 # width in ms
@@ -172,6 +170,8 @@ def plot_candidate(filename,
     if (sk_flag is True):
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
+
+    timeseries = np.nansum(dedispdata, axis=0)
 
     figure = plt.figure(figsize = (10,7))
     size = 12
