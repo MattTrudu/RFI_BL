@@ -124,7 +124,7 @@ def plot_candidate(filename,
     ndelay = np.rint(delay / dt).astype("int")
 
     data = filterbank.readBlock(ncand - ndelay, 2 * ndelay)
-    dedispdata = dedisperse(data, dmcand, freqs, dt, ref_freq = "center")
+    dedispdata = dedisperse(data, dmcand, freqs, dt)
 
     #Center the burst around a window (in ms)
 
