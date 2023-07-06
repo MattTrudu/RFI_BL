@@ -184,7 +184,7 @@ def plot_candidate(filename,
         dedispdata[badchans,:] = np.nan
 
     timeseries = np.nansum(dedispdata, axis=0)
-    bwidth, mvalues = find_best_boxcar_width(timeseries, 1, 100)
+
 
     figure = plt.figure(figsize = (10,7))
     size = 12
@@ -250,9 +250,7 @@ def plot_candidate(filename,
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
     figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
     figure.text(0.650,0.750, f"Candidate peak S/N = {timeseries.max():.2f}" ,fontsize = 10)
-    figure.text(0.650,0.725, f"Boxcar width (time bins) = {bwidth}" ,fontsize = 10)
-    width = bwidth * dt * 1e3
-    figure.text(0.650,0.700, f"Boxcar width (ms) = {width:.2f}" ,fontsize = 10)
+
 
     username = getpass.getuser()
     datetimenow = datetime.utcnow()
