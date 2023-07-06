@@ -79,7 +79,9 @@ def plot_candidate(filename,
     delay = dispersion_delay(fbot, ftop, dms = dmcand)
 
     ncand  = int(tcand // dt)
-    ndelay = int(tcand // dt)
+    ndelay = int(delay // dt)
+
+    print(ncand, ndelay)
 
     data = filterbank.readBlock(ncand, ncand + ndelay)
 
