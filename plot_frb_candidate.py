@@ -172,7 +172,7 @@ def plot_candidate(filename,
     ax1_20.set_ylabel("Frequency (MHz)", size = size)
     ax1_20.set_xlabel("Time (s)", size = size)
 
-    ax1_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]), cmap = "inferno")
+    ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]), cmap = "inferno")
 
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
