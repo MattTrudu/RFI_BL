@@ -81,7 +81,7 @@ def plot_candidate(filename,
     ncand  = int(tcand // dt)
     ndelay = int(tcand // dt)
 
-    data = filterbank.readBlock(ncand, ncand + delay)
+    data = filterbank.readBlock(ncand, ncand + ndelay)
 
     plt.figure(fisize = (10,5))
 
