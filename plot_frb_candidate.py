@@ -207,6 +207,7 @@ def plot_candidate(filename,
     ax0_00.margins(x=0)
     ax0_11.margins(y=0)
 
+    ax0_00.set_ylabel("S/N", size = size)
     ax0_10.set_ylabel("Frequency (MHz)", size = size)
     ax0_20.set_ylabel(r"DM (pc$\times$cm$^{-3}$)", size = size)
     ax0_20.set_xlabel("Time (ms)", size = size)
