@@ -159,6 +159,8 @@ def plot_candidate(filename,
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
 
+    timeseries = np.nansum(data, axis=0)
+
     #Center the burst around a window (in ms)
 
     twin    = twin * 1e-3 # width in ms
@@ -196,7 +198,7 @@ def plot_candidate(filename,
 
     size = 15
     ax0_00.set_xticks([])
-    ax0_00.set_yticks([])
+    #ax0_00.set_yticks([])
     ax0_10.set_xticks([])
     ax0_11.set_xticks([])
     ax0_11.set_yticks([])
@@ -214,6 +216,8 @@ def plot_candidate(filename,
 
     #dedispdata[np.isnan(dedispdata)] = np.nanmedian(dedispdata)
     #data[np.isnan(data)] = np.nanmedian(data)
+
+    ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
     vmin = np.nanpercentile(dedispdata, 1)
     vmax = np.nanpercentile(dedispdata, 99)
