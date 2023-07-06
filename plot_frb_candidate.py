@@ -194,16 +194,16 @@ def _get_parser():
     parser.add_argument(
         "-t",
         "--time_cand",
-        type = "float",
+        type = float,
         help = "Arrival time of the candidate in seconds.",
         required=True,
     )
     parser.add_argument(
         "-d",
         "--dm_cand",
-        type = "float",
+        type = float,
         help = "Dispersion measure of the candidate in pc cm^-3.",
-        required=True,
+        default = 0,
     )
     parser.add_argument(
         "-o",
