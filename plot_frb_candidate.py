@@ -255,6 +255,18 @@ def _get_parser():
         help="Format of the candidate image (Default: .png).",
         default="png",
     )
+    parser.add_argument('-sk',
+                        '--spectral_kurtosis',
+                        help = "Find the bad channels via a spectral kurtosis (Bad channels will be set to zero). Default = False.",
+                        action = 'store_true',
+                        )
+    parser.add_argument('-sksig',
+                        '--spectral_kurtosis_sigma',
+                        type = int,
+                        default = 3,
+                        action = "store" ,
+                        help = "Sigma for the Spectral Kurtosis (Default: 3)"
+                        )
 
     return parser.parse_args()
 
@@ -270,6 +282,8 @@ if __name__ == "__main__":
     tcand       = args.time_cand
     dmcand      = args.dm_cand
     twin        = args.time_window
+    sk_flag     = args.spectral_kurtosis
+    sk_sig      = args.spectral_kurtosis_sigma
 
     plot_candidate(filename,
         tcand = tcand,
@@ -278,5 +292,7 @@ if __name__ == "__main__":
         output_name = "candidate",
         format_file = "png",
         save_flag = save_flag,
-        twin = twin
+        twin = twin,
+        sk_flag = sk_flag,
+        sk_sig = sk_sig
         )
