@@ -8,7 +8,7 @@ from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
 import getpass
-import datetime
+from datetime import datetime
 from tqdm import tqdm
 import os
 import sys
