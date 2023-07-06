@@ -180,9 +180,14 @@ def plot_candidate(filename,
     ax1_20.set_ylabel("Frequency (MHz)", size = size)
     ax1_20.set_xlabel("Time (s)", size = size)
 
-    ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]), cmap = "inferno")
-
-    ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
+    vmin = np.nanpercentile(dedispdata, 1)
+    vmax = np.nanpercentile(dedispdata, 99)
+    ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]),
+                    cmap = "inferno", interpolation="none", vmin = vmin, vmax = vmax)
+    vmin = np.nanpercentile(data, 1)
+    vmax = np.nanpercentile(data, 99)
+    ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno", interpolation="none",
+                vmin = vmin, vmax = vmax)
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
