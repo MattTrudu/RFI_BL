@@ -106,7 +106,7 @@ def boxcar_kernel(width):
     width = int(round(width, 0))
     return np.ones(width, dtype="float32") / width
 
-def find_burst(ts, min_width=1, max_width=256):
+def find_burst(ts, min_width=1, max_width=1024):
     min_width = int(min_width)
     max_width = int(max_width)
     # do not search widths bigger than timeseries
@@ -182,7 +182,7 @@ def plot_candidate(filename,
     timeseries = np.nansum(dedispdata, axis=0)
 
     peak, width, snr = find_burst(timeseries)
-    print(f"Peak: {peak} at time sample, Width = {width*dt} ms, SNR = {snr}")
+    print(f"Peak: {peak} at time sample, Width = {width*dt*1e3} ms, SNR = {snr}")
 
     figure = plt.figure(figsize = (10,7))
     size = 12
