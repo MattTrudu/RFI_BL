@@ -239,9 +239,10 @@ def plot_candidate(filename,
     figure.text(0.650,0.900, f"File name: {name}" ,fontsize = 10)
     figure.text(0.650,0.875, f"File directory: {filedir}" ,fontsize = 10)
 
-    figure.text(0.650,0.850, f"Candidate Information" ,fontsize = 10)
-    figure.text(0.650,0.825, f"Candidate arrival time (s) {tcand}" ,fontsize = 10)
-    figure.text(0.650,0.800, r"Candidate dispersion measure (DM, pc$\times$cm$^{-3}$)" + f"{dmcand}" ,fontsize = 10)
+    figure.text(0.650,0.825, f"Candidate Information" ,fontsize = 10)
+    figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
+    figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
+    figure.text(0.650,0.750, f"Candidate peak S/N = {timeseries.max()}" ,fontsize = 10)
 
     username = getpass.getuser()
     datetimenow = datetime.utcnow()
