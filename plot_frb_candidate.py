@@ -161,7 +161,7 @@ def plot_candidate(filename,
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
 
-    timeseries = np.nansum(dedispdata, axis=0)
+    timeseries = np.nansum(dedispdata, axis=0) / nchan
 
 
 
