@@ -121,6 +121,8 @@ def plot_candidate(filename,
 
     data = filterbank.readBlock(ncand, ndelay)
 
+    print(data.shape)
+
     if (sk_flag is True):
         badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
         data[badchans, :] = 0
@@ -166,7 +168,7 @@ def plot_candidate(filename,
     ax1_20.set_ylabel("Frequency (MHz)", size = size)
     ax1_20.set_xlabel("Time (s)", size = size)
 
-    ax1_20.imshow(data, aspect = "auto", extent = (0, ndelay * dt, freqs[-1], freqs[0]), cmap = "inferno")
+    ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
