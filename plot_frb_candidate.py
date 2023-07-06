@@ -152,6 +152,9 @@ def plot_candidate(filename,
     ndelay = np.rint(delay / dt).astype("int")
 
     data = filterbank.readBlock(ncand - ndelay, 2 * ndelay)
+    if (sk_flag is True):
+        badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
+
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
 
@@ -164,7 +167,6 @@ def plot_candidate(filename,
     data = data[:, ndelay : -1]
 
     if (sk_flag is True):
-        badchans = sk_filter(data.T, df, dt, sigma = sk_sig)
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
 
