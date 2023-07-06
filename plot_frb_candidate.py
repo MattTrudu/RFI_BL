@@ -256,5 +256,5 @@ if __name__ == "__main__":
         output_dir = os.getcwd(),
         output_name = "candidate",
         format_file = "png",
-        save_flag=True
+        save_flag = save_flag
         )
