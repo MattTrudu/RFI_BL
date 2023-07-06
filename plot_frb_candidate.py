@@ -93,25 +93,11 @@ def renormalize_data(array):
     renorm_data = np.copy(array)
     spec = renorm_data.mean(1)
 
-    for i, newd in enumerate(renorm_data):
-        renorm_data[i, :] = (newd - spec[i]) / spec[i]
+    #for i, newd in enumerate(renorm_data):
+    #    renorm_data[i, :] = (newd - spec[i]) / spec[i]
 
     baseline = np.mean(renorm_data, axis=0)
-    """
-    if baseline.size > 1000:
-        smooth_baseline = gaussian_filter(baseline, 101, truncate = 1)
-        detr = baseline - smooth_baseline
 
-        ordered = np.sort(detr)
-        q1 = ordered[baseline.size // 4]
-        q2 = ordered[baseline.size // 2]
-        q3 = ordered[baseline.size // 4 * 3]
-        lowlim = q2 - 2 * (q2 - q1)
-        hilim = q2 + 2 * (q3 - q2)
-
-        badbins = (detr < lowlim) | (detr > hilim)
-        baseline = smooth_baseline
-    """
     renorm_data -= baseline
 
     return renorm_data
@@ -242,7 +228,7 @@ def plot_candidate(filename,
     figure.text(0.650,0.825, f"Candidate Information" ,fontsize = 10)
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
     figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
-    figure.text(0.650,0.750, f"Candidate peak S/N = {timeseries.max()}" ,fontsize = 10)
+    figure.text(0.650,0.750, f"Candidate peak S/N = {timeseries.max():.2f}" ,fontsize = 10)
 
     username = getpass.getuser()
     datetimenow = datetime.utcnow()
