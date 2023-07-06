@@ -13,6 +13,7 @@ from tqdm import tqdm
 import os
 import sys
 import argparse
+from scipy.optimize import curve_fit
 
 def calc_N(channel_bandwidth, tsamp):
 
@@ -102,28 +103,59 @@ def renormalize_data(array):
 
     return renorm_data
 
-def find_best_boxcar_width(time_series, min_width, max_width):
+def gauss(x,a,x0,sigma):
+
     """
-    Find the best boxcar width for a normalized time series.
-
-    Arguments:
-    - time_series: The normalized time series as a 1D NumPy array.
-    - min_width: The minimum boxcar width to consider.
-    - max_width: The maximum boxcar width to consider.
-
-    Returns:
-    - best_width: The best boxcar width found.
-    - metric_values: The metric values corresponding to each boxcar width.
+    Simple Gaussian Function. I use this to fit the data to get FRB width.
     """
-    metric_values = []
-    widths = range(min_width, max_width+1)
 
-    for width in widths:
-        smoothed = np.convolve(time_series, np.ones(width) / width, mode='same')
-        metric_values.append(np.mean(smoothed**2))  # Metric: mean squared value of the smoothed series
+    return a*np.exp(-(x-x0)**2/(2*sigma**2))
 
-    best_width = widths[np.argmin(metric_values)]
-    return best_width, metric_values
+def get_width(time,timeseries,k):
+
+    """
+    Function to get the width of a burst from a Gaussian fit. The width is taken as the Full Width at Tenth Maximum (FWTM) FWTM = 4.292 x sigma
+    """
+    A    = np.max(timeseries)
+    tmax = time[np.argmax(timeseries)]
+    par_time_opt,par_time_cov = curve_fit(gauss,time,timeseries, p0=[A,tmax,0.01])
+
+    sigma_t = np.abs(par_time_opt[2])
+
+    W = k * sigma_t
+    Werr = k * np.sqrt(np.abs(par_time_cov[2,2]))
+
+    return W, Werr
+
+def get_snr(timeseries, wsamp):
+
+    """
+    Compute the integrated S/N of single pulse timeseries. It requires the width (in samples) of the burst. I use the equation from McLaughlin and Cordes 2003.
+    """
+
+    if wsamp == 0:
+        wsamp = 1
+    wsamp = int(wsamp/ 2)
+    amax = np.argmax(timeseries)
+
+    mask = np.ones(timeseries.shape[0], dtype = np.bool)
+    mask[amax - wsamp : amax + wsamp ] = 0
+
+    mu  = np.mean(timeseries[mask]) # mean off-burst
+    std = np.std(timeseries[mask])  # rms off-burst
+    print("mu,sig",mu,std)
+    if std == 0:
+      std = 1e-4
+
+    tmax = np.max(timeseries)
+    if np.max(timeseries) == 0:
+      tmax = 1e-4
+
+    Weq = np.sum(timeseries[amax - wsamp : amax + wsamp ]) / tmax
+
+    SNR = np.sum(timeseries - mu) / (std * np.sqrt(Weq))
+
+    return SNR
 
 def plot_candidate(filename,
     tcand = 0,
@@ -173,7 +205,7 @@ def plot_candidate(filename,
 
     #Center the burst around a window (in ms)
 
-    twin    = twin * 1e-3 # width in ms
+    twin    = twin * 1e-3 # width in s
     nwin    = np.rint(twin / dt / 2).astype("int")
 
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
@@ -183,7 +215,14 @@ def plot_candidate(filename,
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
 
+    time = np.linspace(-twin / 2, twin / 2, dedispdata.shape[1])
     timeseries = np.nansum(dedispdata, axis=0)
+
+    width, width_err = get_width(time,timeseries,2.355)
+    wsamp = np.rint(width / dt).astype("int")
+    snr = get_snr(timeseries, wsamp)
+    print(width*1e3, wsamp)
+
 
 
     figure = plt.figure(figsize = (10,7))
@@ -254,7 +293,7 @@ def plot_candidate(filename,
 
     username = getpass.getuser()
     datetimenow = datetime.utcnow()
-    figure.text(0.85,0.02,"Plot made by %s on %s UTC"%(username,str(datetimenow)[0:19]), fontsize = 8)
+    figure.text(0.650,0.01,"Plot made by %s on %s UTC"%(username,str(datetimenow)[0:19]), fontsize = 8)
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
