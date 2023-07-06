@@ -240,10 +240,12 @@ def plot_candidate(filename,
     figure.text(0.650,0.875, f"File directory: {filedir}" ,fontsize = 10)
 
     figure.text(0.650,0.850, f"Candidate Information" ,fontsize = 10)
+    figure.text(0.650,0.825, f"Candidate arrival time (s) {tcand}" ,fontsize = 10)
+    figure.text(0.650,0.800, r"Candidate dispersion measure (DM, pc$\times$cm$^{-3}$)" + f"{dmcand}" ,fontsize = 10)
 
     username = getpass.getuser()
     datetimenow = datetime.utcnow()
-    figure.text(0.75,0.020,"Plot made by %s on %s UTC"%(username,str(datetimenow)[0:19]), fontsize = size)
+    figure.text(0.75,0.02,"Plot made by %s on %s UTC"%(username,str(datetimenow)[0:19]), fontsize = 5)
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
