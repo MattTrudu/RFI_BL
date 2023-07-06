@@ -102,24 +102,28 @@ def renormalize_data(array):
 
     return renorm_data
 
-def boxcar_kernel(width):
-    width = int(round(width, 0))
-    return np.ones(width, dtype="float32") / width
+def find_best_boxcar_width(time_series, min_width, max_width):
+    """
+    Find the best boxcar width for a normalized time series.
 
-def find_burst(ts, min_width=1, max_width=1024):
-    min_width = int(min_width)
-    max_width = int(max_width)
-    # do not search widths bigger than timeseries
-    widths = list(range(min_width, min(max_width + 1, len(ts)-2)))
-    # envelope finding
-    snrs = np.empty_like(widths, dtype=float)
-    peaks = np.empty_like(widths, dtype=int)
-    for i in range(len(widths)):
-        convolved = scipy.signal.convolve(ts, boxcar_kernel(widths[i]), mode="same")
-        peaks[i] = np.nanargmax(convolved)
-        snrs[i] = convolved[peaks[i]]
-    best_idx = np.nanargmax(snrs)
-    return peaks[best_idx], widths[best_idx], snrs[best_idx]
+    Arguments:
+    - time_series: The normalized time series as a 1D NumPy array.
+    - min_width: The minimum boxcar width to consider.
+    - max_width: The maximum boxcar width to consider.
+
+    Returns:
+    - best_width: The best boxcar width found.
+    - metric_values: The metric values corresponding to each boxcar width.
+    """
+    metric_values = []
+    widths = range(min_width, max_width+1)
+
+    for width in widths:
+        smoothed = np.convolve(time_series, np.ones(width) / width, mode='same')
+        metric_values.append(np.mean(smoothed**2))  # Metric: mean squared value of the smoothed series
+
+    best_width = widths[np.argmin(metric_values)]
+    return best_width, metric_values
 
 def plot_candidate(filename,
     tcand = 0,
@@ -180,9 +184,7 @@ def plot_candidate(filename,
         dedispdata[badchans,:] = np.nan
 
     timeseries = np.nansum(dedispdata, axis=0)
-
-    peak, width, snr = find_burst(timeseries)
-    print(f"Peak: {peak} at time sample, Width = {width*dt*1e3} ms, SNR = {snr}")
+    bwidth, mvalues = find_best_boxcar_width(timeseries, 1, timeseries.shape[0])
 
     figure = plt.figure(figsize = (10,7))
     size = 12
@@ -248,10 +250,13 @@ def plot_candidate(filename,
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
     figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
     figure.text(0.650,0.750, f"Candidate peak S/N = {timeseries.max():.2f}" ,fontsize = 10)
+    figure.text(0.650,0.725, f"Boxcar width (time bins) = {bwidth}" ,fontsize = 10)
+    width = bwidth * dt * 1e3
+    figure.text(0.650,0.700, f"Boxcar width (ms) = {width:.2f}" ,fontsize = 10)
 
     username = getpass.getuser()
     datetimenow = datetime.utcnow()
-    figure.text(0.75,0.02,"Plot made by %s on %s UTC"%(username,str(datetimenow)[0:19]), fontsize = 5)
+    figure.text(0.85,0.02,"Plot made by %s on %s UTC"%(username,str(datetimenow)[0:19]), fontsize = 8)
 
     if save_flag:
         output_name = f"{output_name}.{format_file}"
