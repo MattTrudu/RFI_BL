@@ -50,8 +50,8 @@ def dedisperse(wfall, DM, freq, dt, ref_freq="bottom"):
     return dedisp
 
 def plot_candidate(filename,
-    tcand = 0,
-    dmcand = 0,
+    tcand = 10,
+    dmcand = 348.772,
     output_dir = os.getcwd(),
     output_name = "candidate",
     format_file = ".png",
