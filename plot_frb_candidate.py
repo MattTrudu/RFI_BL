@@ -93,8 +93,8 @@ def renormalize_data(array):
     renorm_data = np.copy(array)
     spec = renorm_data.mean(1)
 
-    #for i, newd in enumerate(renorm_data):
-    #    renorm_data[i, :] = (newd - spec[i]) / spec[i]
+    for i, newd in enumerate(renorm_data):
+        renorm_data[i, :] = (newd - spec[i]) / spec[i]
 
     baseline = np.mean(renorm_data, axis=0)
 
@@ -102,6 +102,24 @@ def renormalize_data(array):
 
     return renorm_data
 
+def boxcar_kernel(width):
+    width = int(round(width, 0))
+    return np.ones(width, dtype="float32") / width
+
+def find_burst(ts, min_width=1, max_width=256):
+    min_width = int(min_width)
+    max_width = int(max_width)
+    # do not search widths bigger than timeseries
+    widths = list(range(min_width, min(max_width + 1, len(ts)-2)))
+    # envelope finding
+    snrs = np.empty_like(widths, dtype=float)
+    peaks = np.empty_like(widths, dtype=int)
+    for i in range(len(widths)):
+        convolved = scipy.signal.convolve(ts, boxcar_kernel(widths[i]), mode="same")
+        peaks[i] = np.nanargmax(convolved)
+        snrs[i] = convolved[peaks[i]]
+    best_idx = np.nanargmax(snrs)
+    return peaks[best_idx], widths[best_idx], snrs[best_idx]
 
 def plot_candidate(filename,
     tcand = 0,
@@ -161,9 +179,10 @@ def plot_candidate(filename,
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
 
-    timeseries = np.nansum(dedispdata, axis=0) / nchan
+    timeseries = np.nansum(dedispdata, axis=0)
 
-
+    peak, width, snr = find_burst(ts)
+    print(f"Peak: {peak} at time sample, Width = {width*dt} ms, SNR = {snr}")
 
     figure = plt.figure(figsize = (10,7))
     size = 12
