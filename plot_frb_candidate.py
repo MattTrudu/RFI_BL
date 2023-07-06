@@ -233,7 +233,7 @@ def _get_parser():
         "--file_format",
         action="store",
         help="Format of the candidate image (Default: .png).",
-        default=".png",
+        default="png",
     )
 
     return parser.parse_args()
@@ -255,6 +255,6 @@ if __name__ == "__main__":
         dmcand = dmcand,
         output_dir = os.getcwd(),
         output_name = "candidate",
-        format_file = ".png",
+        format_file = "png",
         save_flag=True
         )
