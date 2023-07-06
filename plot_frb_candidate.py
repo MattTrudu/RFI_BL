@@ -169,7 +169,7 @@ def plot_candidate(filename,
     ax1_20.imshow(data, aspect = "auto", extent = (0, ndelay * dt, freqs[-1], freqs[0]), cmap = "inferno")
 
     if save_flag:
-        output_name = f"{output_name}.{file_format}"
+        output_name = f"{output_name}.{format_file}"
         plt.savefig(os.path.join(output_dir, output_name))
     else:
         plt.show()
