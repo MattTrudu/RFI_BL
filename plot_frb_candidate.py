@@ -175,7 +175,7 @@ def get_bandpass_onoff(wfall, wsamp):
 
 def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
 
-    dedispdata = np.nan_to_num(dedispdata, nan=0)
+    #dedispdata = np.nan_to_num(dedispdata, nan=0)
 
     dmrange = 0.4 * DM
 
@@ -186,9 +186,23 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
     for k,dm in enumerate(DMs):
 
         data = dedisperse(dedispdata, dm, freqs, dt, ref_freq= ref_freq)
-        dmt[k,:] = data.mean(0)
+        dmt[k,:] = np.nansum(data, axis = 0)#data.mean(0)
 
     return DMs,dmt
+
+def bin_freq_channels(data, fbin_factor=4):
+    num_chan = data.shape[0]
+    if num_chan % fbin_factor != 0:
+        raise ValueError("frequency binning factor `fbin_factor` should be even")
+    data = np.nanmean(data.reshape((num_chan // fbin_factor, fbin_factor) + data.shape[1:]), axis=1)
+    return data
+
+def bin_time_samples(data, tbin_factor=4):
+    num_samples = data.shape[1]
+    if num_samples % tbin_factor != 0:
+        raise ValueError("time binning factor `tbin_factor` should be even")
+    data = np.nanmean(data.reshape(data.shape[0], num_samples // tbin_factor, tbin_factor), axis=2)
+    return data
 
 def plot_candidate(filename,
     tcand = 0,
@@ -199,7 +213,9 @@ def plot_candidate(filename,
     save_flag = False,
     sk_flag = False,
     sk_sig = 3,
-    twin = 100
+    twin = 100,
+    fbin_factor = 1,
+    tbin_factor = 1
     ):
 
     filedir, name = os.path.split(filename)
@@ -245,12 +261,17 @@ def plot_candidate(filename,
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
     data = data[:, ndelay : -1]
 
-    dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand, ref_freq = "top")
-
 
     if (sk_flag is True):
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
+
+    if fbin_factor > 1:
+        data = bin_freq_channels(data, fbin_factor = fbin_factor)
+        dedispdata = bin_freq_channels(dedispdata, fbin_factor = fbin_factor)
+        freqs = np.linspace(freqs[0],freqs[-1],dedispdata.shape[0])
+
+    dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand, ref_freq = "top")
 
     time = np.linspace(-twin / 2, twin / 2, dedispdata.shape[1])
     timeseries = np.nansum(dedispdata, axis=0)
@@ -437,7 +458,20 @@ def _get_parser():
                         action = "store" ,
                         help = "Sigma for the Spectral Kurtosis (Default: 3)"
                         )
-
+    parser.add_argument('-fb',
+                        '--fbin_factor',
+                        type = int,
+                        default = 1,
+                        action = "store" ,
+                        help = "Factor to downsample the data in frequency (Default: 1, not downsample)"
+                        )
+    parser.add_argument('-tb',
+                        '--tbin_factor',
+                        type = int,
+                        default = 1,
+                        action = "store" ,
+                        help = "Factor to downsample the data in time (Default: 1, not downsample)"
+                        )
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -454,6 +488,8 @@ if __name__ == "__main__":
     twin        = args.time_window
     sk_flag     = args.spectral_kurtosis
     sk_sig      = args.spectral_kurtosis_sigma
+    fbin_factor = args.fbin_factor
+    tbin_factor = args.tbin_factor
 
     plot_candidate(filename,
         tcand = tcand,
@@ -464,5 +500,7 @@ if __name__ == "__main__":
         save_flag = save_flag,
         twin = twin,
         sk_flag = sk_flag,
-        sk_sig = sk_sig
+        sk_sig = sk_sig,
+        fbin_factor = fbin_factor,
+        tbin_factor = tbin_factor
         )
