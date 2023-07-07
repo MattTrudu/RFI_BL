@@ -257,9 +257,9 @@ def plot_candidate(filename,
 
 
     #ax0_01 = plt.subplot(gs0[0,1])
+    ax0_00 = plt.subplot(gs0[0,0])
     ax0_10 = plt.subplot(gs0[1,0])
-    ax0_00 = plt.subplot(gs0[0,0], sharex = ax0_10)
-    ax0_11 = plt.subplot(gs0[1,1], sharey = ax0_10)
+    ax0_11 = plt.subplot(gs0[1,1])
     ax0_20 = plt.subplot(gs0[2,0])
     ax0_21 = plt.subplot(gs0[2,1])
 
