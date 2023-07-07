@@ -290,7 +290,7 @@ def plot_candidate(filename,
     timeseries = np.nansum(dedispdata, axis=0)
 
     width, width_err = get_width(time,timeseries,2.355)
-    wsamp = np.rint(width / dt).astype("int")
+
 
     if fshape is not None:
         data = resize(data, (fshape, data.shape[1]), anti_aliasing = True)
@@ -306,6 +306,8 @@ def plot_candidate(filename,
         dt = abs(time[0] - time[1])
 
     timeseries = np.nansum(dedispdata, axis=0)
+    wsamp = np.rint(width / dt).astype("int")
+    snr = get_snr(timeseries, wsamp)
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
@@ -342,7 +344,7 @@ def plot_candidate(filename,
 
     size = 15
     ax0_00.set_xticks([])
-    #ax0_00.set_yticks([])
+    ax0_00.set_yticks([])
     ax0_10.set_xticks([])
     ax0_11.set_xticks([])
     ax0_11.set_yticks([])
@@ -392,7 +394,7 @@ def plot_candidate(filename,
     figure.text(0.650,0.825, f"Candidate Information" ,fontsize = 10)
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
     figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
-    figure.text(0.650,0.750, f"Candidate peak S/N = {timeseries.max():.2f}" ,fontsize = 10)
+    figure.text(0.650,0.750, f"Candidate peak S/N = {snr:.2f}" ,fontsize = 10)
     figure.text(0.650,0.725, f"Candidate FWHM width (ms) = {width*1e3:.2f}" ,fontsize = 10)
 
 
