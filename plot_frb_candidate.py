@@ -255,7 +255,7 @@ def plot_candidate(filename,
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
-    dms, dmt = DMT(dedispdata, freqs, dt)
+    dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand)
 
     if (sk_flag is True):
         onbpass[badchans] = np.nan
@@ -316,7 +316,7 @@ def plot_candidate(filename,
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
-    ax0_20.imshow(dmt, aspect = "auto")
+    ax0_20.imshow(dmt, aspect = "auto", extent = (-twin * 1e3 / 2, twin * 1e3, dmcand + dms[-1], dmcand + dms[0]))
 
     if (sk_flag is True):
         ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
