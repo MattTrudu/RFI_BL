@@ -186,7 +186,7 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
     for k,dm in enumerate(DMs):
 
         data = dedisperse(dedispdata, dm, freqs, dt, ref_freq= ref_freq)
-        dmt[k,:] = dedispdata.sum()
+        dmt[k,:] = dedispdata.mean(0)
 
     return DMs,dmt
 
