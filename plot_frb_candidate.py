@@ -217,7 +217,6 @@ def plot_candidate(filename,
 
     if (sk_flag is True):
         badchans = sk_filter(data[:, ndelay : -1].T, df, dt, sigma = sk_sig)
-        badchans[0:100] = 1
 
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
@@ -294,8 +293,8 @@ def plot_candidate(filename,
 
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
-    ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
-    ax0_11.plot(onbpass, freqs, linewidth = 2, color = "darkgreen", alpha = 0.9)
+    ax0_11.plot(offbpass, linewidth = 2, color = "darkred", alpha = 0.5)
+    ax0_11.plot(onbpass,  linewidth = 2, color = "darkgreen", alpha = 0.9)
 
     vmin = np.nanpercentile(dedispdata, 1)
     vmax = np.nanpercentile(dedispdata, 99)
