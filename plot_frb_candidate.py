@@ -180,6 +180,7 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
     dmrange = 0.4 * DM
 
     DMs = np.linspace(-dmrange, dmrange, dmsteps)
+    print(dms)
 
     dmt = np.zeros((dmsteps, dedispdata.shape[1]))
 
