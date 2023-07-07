@@ -163,7 +163,7 @@ def get_bandpass_onoff(wfall, wsamp):
     argmax = np.argmax(timeseries)
 
     mask = np.ones(wfall.shape, dtype = np.bool)
-    mask[argmax - wsamp // 2 : argmax + wsamp // 2] = 0
+    mask[:,argmax - wsamp // 2 : argmax + wsamp // 2] = 0
 
     offpulsewfall = wfall[mask]
     onpulsewfall  = wfall[~mask]
