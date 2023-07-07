@@ -186,7 +186,7 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
         data = dedisperse(dedispdata, dm, freqs, dt, ref_freq= ref_freq)
         dmt[k,:] = np.nansum(dedispdata, axis = 0)
 
-    return dms,dmt
+    return DMs,dmt
 
 def plot_candidate(filename,
     tcand = 0,
