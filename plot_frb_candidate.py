@@ -139,7 +139,7 @@ def get_snr(timeseries, wsamp):
     wsamp = int(wsamp/ 2)
     amax = np.argmax(timeseries)
 
-    mask = np.ones(timeseries.shape[0], dtype = np.bool)
+    mask = np.ones(timeseries.shape[0], dtype = bool)
     mask[amax - wsamp : amax + wsamp ] = 0
 
     mu  = np.mean(timeseries[mask]) # mean off-burst
@@ -233,7 +233,10 @@ def plot_candidate(filename,
     sk_sig = 3,
     twin = 100,
     fshape = None,
-    tshape = None
+    tshape = None,
+    grab_channels=False,
+    channel_start=None,
+    channel_stop=None
     ):
 
     filedir, name = os.path.split(filename)
@@ -270,6 +273,21 @@ def plot_candidate(filename,
 
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
+
+    if grab_channels:
+        cstart = int(channel_start)
+        cstop  = int(channel_stop)
+        if cstart < 0:
+            cstart = 0
+        if cstop > nchan:
+            cstop = nchan
+        data = data[cstart:cstop,:]
+        dedispdata = dedispdata[cstart:cstop,:]
+        freqs      = freqs[[cstart:cstop]
+        channels = channels[cstart:cstop]
+        if (sk_flag is True):
+            badchans = badchans[cstart:cstop]
+
 
     #Center the burst around a window (in ms)
 
@@ -354,7 +372,7 @@ def plot_candidate(filename,
     ax0_11.margins(y=0)
     ax0_21.margins(y=0)
 
-    ax0_00.set_ylabel("S/N", size = size)
+    #ax0_00.set_ylabel("S/N", size = size)
     ax0_10.set_ylabel("Frequency (MHz)", size = size)
     ax0_20.set_ylabel(r"DM (pc$\times$cm$^{-3}$)", size = size)
     ax0_20.set_xlabel("Time (ms)", size = size)
@@ -499,6 +517,16 @@ def _get_parser():
                         action = "store" ,
                         help = "Shape of the data in time (Default: 256)"
                         )
+    parser.add_argument(
+        "-c",
+        "--grab_channels",
+        help="Grab a portion of the data in frequency channels. Usage -c cstart cstop (Default = False).",
+        nargs=2,
+        type=int,
+        default=None,
+    )
+
+
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -517,6 +545,8 @@ if __name__ == "__main__":
     sk_sig      = args.spectral_kurtosis_sigma
     fshape      = args.f_shape
     tshape      = args.t_shape
+    grab_channels = args.grab_channels is not None
+    channel_start, channel_stop = args.grab_channels or (None, None)
 
     plot_candidate(filename,
         tcand = tcand,
@@ -529,5 +559,7 @@ if __name__ == "__main__":
         sk_flag = sk_flag,
         sk_sig = sk_sig,
         fshape = fshape,
-        tshape = tshape
+        tshape = tshape,
+        cstart = channel_start,
+        cstop  = channel_stop
         )
