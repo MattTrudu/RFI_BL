@@ -283,7 +283,7 @@ def plot_candidate(filename,
             cstop = nchan
         data = data[cstart:cstop,:]
         dedispdata = dedispdata[cstart:cstop,:]
-        freqs      = freqs[[cstart:cstop]
+        freqs      = freqs[cstart:cstop]
         channels = channels[cstart:cstop]
         if (sk_flag is True):
             badchans = badchans[cstart:cstop]
