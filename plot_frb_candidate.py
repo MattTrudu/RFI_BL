@@ -245,7 +245,7 @@ def plot_candidate(filename,
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
     data = data[:, ndelay : -1]
 
-    dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand, dmsteps = 1024)
+    dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand, ref_freq = "top")
     print(dmt.shape)
 
     if (sk_flag is True):
