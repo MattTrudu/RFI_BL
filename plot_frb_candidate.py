@@ -293,8 +293,8 @@ def plot_candidate(filename,
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
     if (sk_flag is True):
-        ax0_11.step(offbpass[~badchans], freqs[~badchans], linewidth = 2, color = "darkred", alpha = 0.5)
-        ax0_11.step(onbpass[~badchans],  freqs[~badchans],linewidth = 2, color = "darkgreen", alpha = 0.9)
+        ax0_11.step(offbpass[~badchans], freqs[~badchans], linewidth = 2, color = "darkred", alpha = 0.5, where = "post")
+        ax0_11.step(onbpass[~badchans],  freqs[~badchans],linewidth = 2, color = "darkgreen", alpha = 0.9, where = "post")
     else:
         ax0_11.step(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
         ax0_11.step(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
