@@ -190,18 +190,20 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
 
     return DMs,dmt
 
-def bin_freq_channels(data, fbin_factor=4):
+def bin_freq_channels(data, fbin_factor = 1):
     num_chan = data.shape[0]
     if num_chan % fbin_factor != 0:
         raise ValueError("frequency binning factor `fbin_factor` should be even")
     data = np.nanmean(data.reshape((num_chan // fbin_factor, fbin_factor) + data.shape[1:]), axis=1)
     return data
 
-def bin_time_samples(data, tbin_factor=4):
+def bin_time_samples(data, tbin_factor = 1):
     num_samples = data.shape[1]
     if num_samples % tbin_factor != 0:
-        raise ValueError("time binning factor `tbin_factor` should be even")
-    data = np.nanmean(data.reshape(data.shape[0], num_samples // tbin_factor, tbin_factor), axis=2)
+        data = data[:,0: num_samples * tbin_factor]
+        data = np.nanmean(data.reshape(data.shape[0], num_samples // tbin_factor, tbin_factor), axis=2)
+    else:
+        data = np.nanmean(data.reshape(data.shape[0], num_samples // tbin_factor, tbin_factor), axis=2)
     return data
 
 def plot_candidate(filename,
