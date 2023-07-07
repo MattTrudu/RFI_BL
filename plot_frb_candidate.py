@@ -8,6 +8,7 @@ from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
 from skimage.transform import resize
+from scipy.signal import detrend
 import getpass
 from datetime import datetime
 from tqdm import tqdm
@@ -298,7 +299,8 @@ def plot_candidate(filename,
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
     data = data[:, ndelay : -1]
 
-
+    data = detrend(data)
+    dedispdata = detrend(data)
 
     if (sk_flag is True):
         data[badchans, :] = np.nan
