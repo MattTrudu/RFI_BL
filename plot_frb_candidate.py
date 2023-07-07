@@ -299,8 +299,8 @@ def plot_candidate(filename,
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
     data = data[:, ndelay : -1]
 
-    data = detrend(data)
-    dedispdata = detrend(data)
+    #data = detrend(data)
+    #dedispdata = detrend(data)
 
     if (sk_flag is True):
         data[badchans, :] = np.nan
