@@ -255,7 +255,7 @@ def plot_candidate(filename,
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
-    dms, dmt = DMT(dedispdata, freqs, dt=
+    dms, dmt = DMT(dedispdata, freqs, dt)
 
     if (sk_flag is True):
         onbpass[badchans] = np.nan
