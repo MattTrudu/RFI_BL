@@ -271,7 +271,8 @@ def plot_candidate(filename,
         badchans = sk_filter(data[:, ndelay : -1].T, df, dt, sigma = sk_sig)
 
 
-    data = renormalize_data(data)
+    #data = renormalize_data(data)
+
     dedispdata = dedisperse(data, dmcand, freqs, dt)
 
     if grab_channels:
@@ -296,6 +297,9 @@ def plot_candidate(filename,
 
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
     data = data[:, ndelay : -1]
+    plt.figure()
+    plt.imshow(data, aspect = "auto")
+    plt.savefig("bl.png")
 
 
     if (sk_flag is True):
