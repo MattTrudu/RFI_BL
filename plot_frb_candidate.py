@@ -175,6 +175,8 @@ def get_bandpass_onoff(wfall, wsamp):
 
 def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
 
+    dedispdata = np.nan_to_num(dedispdata, nan=0)
+
     dmrange = 0.4 * DM
 
     DMs = np.linspace(-dmrange, dmrange, dmsteps)
@@ -184,7 +186,7 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
     for k,dm in enumerate(DMs):
 
         data = dedisperse(dedispdata, dm, freqs, dt, ref_freq= ref_freq)
-        dmt[k,:] = dedispdata.mean()
+        dmt[k,:] = dedispdata.sum()
 
     return DMs,dmt
 
