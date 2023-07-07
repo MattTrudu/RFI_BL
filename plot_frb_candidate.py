@@ -244,6 +244,10 @@ def plot_candidate(filename,
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
+    if (sk_flag is True):
+        onbpass[badchans] = np.nan
+        offbpass[badchans] = np.nan
+
     figure = plt.figure(figsize = (10,7))
     size = 12
 
@@ -300,14 +304,11 @@ def plot_candidate(filename,
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
     if (sk_flag is True):
-        offbpass[badchans] = 0
-        freqs[badchans]    = 0
-        onbpass[badchans]  = 0
-        ax0_11.step(offbpass[~badchans], freqs[~badchans], linewidth = 2, color = "darkred", alpha = 0.5, where = "post")
-        ax0_11.step(onbpass[~badchans],  freqs[~badchans],linewidth = 2, color = "darkgreen", alpha = 0.9, where = "post")
+        ax0_11.plot(offbpass[badchans], freqs[badchans], linewidth = 2, color = "darkred", alpha = 0.5)
+        ax0_11.plot(onbpass[badchans],  freqs[badchans],linewidth = 2, color = "darkgreen", alpha = 0.9)
     else:
-        ax0_11.step(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
-        ax0_11.step(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
+        ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
+        ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
 
 
