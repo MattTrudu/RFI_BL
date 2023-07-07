@@ -316,7 +316,7 @@ def plot_candidate(filename,
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
-    ax0_20.imshow(dmt, aspect = "auto", extent = (-twin * 1e3 / 2, twin * 1e3 /2, dms[-1], dms[0]))
+    ax0_20.imshow(dmt, aspect = "auto")
 
     if (sk_flag is True):
         ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
