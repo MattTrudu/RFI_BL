@@ -301,6 +301,7 @@ def plot_candidate(filename,
     if tshape is not None:
         data = resize(data, (data.shape[0], tshape), anti_aliasing = True)
         dedispdata = resize(dedispdata, (data.shape[0], tshape), anti_aliasing = True)
+        dmt = resize(dmt, (dmt.shape[0], tshape), anti_aliasing = True)
         time = np.linspace(time[0], time[-1], tshape)
         dt = abs(time[0] - time[1])
 
