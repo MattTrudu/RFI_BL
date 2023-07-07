@@ -169,7 +169,7 @@ def get_bandpass_onoff(wfall, wsamp):
     onpulsewfall  = wfall[~mask]
 
     onpulsebpass  = np.nansum(onpulsewfall)
-    offpulsebpass = np.nansum(offpulsewall)
+    offpulsebpass = np.nansum(offpulsewfall)
 
     return onpulsebpass, offpulsebpass
 
