@@ -489,7 +489,7 @@ def _get_parser():
                         action = "store" ,
                         help = "Shape of the data in frequency (Default: 256)"
                         )
-    parser.add_argument('-tb',
+    parser.add_argument('-ts',
                         '--t_shape',
                         type = int,
                         default = 256,
