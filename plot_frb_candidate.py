@@ -241,7 +241,7 @@ def plot_candidate(filename,
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
     if (sk_flag is True):
-        freqsf = np.copy(freqsf)
+        freqsf = np.copy(freqs)
         freqsf[badchans]   = np.nan
         onbpass[badchans]  = np.nan
         offbpass[badchans] = np.nan
@@ -295,8 +295,12 @@ def plot_candidate(filename,
 
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
-    ax0_11.plot(offbpass, freqsf, linewidth = 2, color = "darkred", alpha = 0.5)
-    ax0_11.plot(onbpass,  freqsf,linewidth = 2, color = "darkgreen", alpha = 0.9)
+    if (sk_flag is True):
+        ax0_11.plot(offbpass, freqsf, linewidth = 2, color = "darkred", alpha = 0.5)
+        ax0_11.plot(onbpass,  freqsf,linewidth = 2, color = "darkgreen", alpha = 0.9)
+    else:
+        ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
+        ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
     vmin = np.nanpercentile(dedispdata, 1)
     vmax = np.nanpercentile(dedispdata, 99)
