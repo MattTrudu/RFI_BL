@@ -274,9 +274,6 @@ def plot_candidate(filename,
     width, width_err = get_width(time,timeseries,2.355)
     wsamp = np.rint(width / dt).astype("int")
 
-    onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
-
-    ondmcurve, offdmcurve = get_bandpass_onoff(dmt, wsamp)
 
     if fbin_factor > 1:
         data = bin_freq_channels(data, fbin_factor = fbin_factor)
@@ -288,11 +285,14 @@ def plot_candidate(filename,
         dedispdata = bin_time_samples(dedispdata, tbin_factor = tbin_factor)
         time = np.linspace(time[0],time[-1],dedispdata.shape[1])
 
+    onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
+
+    ondmcurve, offdmcurve = get_bandpass_onoff(dmt, wsamp)
 
 
-    if (sk_flag is True):
-        onbpass[badchans] = np.nan
-        offbpass[badchans] = np.nan
+    #if (sk_flag is True):
+    #    onbpass[badchans] = np.nan
+    #    offbpass[badchans] = np.nan
 
     figure = plt.figure(figsize = (10,7))
     size = 12
@@ -355,12 +355,9 @@ def plot_candidate(filename,
     #ax0_21.plot(offdmcurve, dmcand + dms , linewidth = 2, color = "darkred", alpha = 0.5)
     ax0_21.plot(ondmcurve,  dmcand + dms , linewidth = 2, color = "darkgreen", alpha = 0.9)
 
-    if (sk_flag is True):
-        ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
-        ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
-    else:
-        ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
-        ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
+
+    ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
+    ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
 
 
