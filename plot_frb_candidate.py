@@ -295,7 +295,7 @@ def plot_candidate(filename,
 
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
-    ax0_11.plot(offbpass, freqsf linewidth = 2, color = "darkred", alpha = 0.5)
+    ax0_11.plot(offbpass, freqsf, linewidth = 2, color = "darkred", alpha = 0.5)
     ax0_11.plot(onbpass,  freqsf,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
     vmin = np.nanpercentile(dedispdata, 1)
