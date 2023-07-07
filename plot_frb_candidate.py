@@ -354,7 +354,7 @@ def plot_candidate(filename,
     ax0_10 = plt.subplot(gs0[1,0])
     ax0_11 = plt.subplot(gs0[1,1])
     ax0_20 = plt.subplot(gs0[2,0])
-    ax0_21 = plt.subplot(gs0[2,1])
+    #ax0_21 = plt.subplot(gs0[2,1])
 
     #ax1_00 = plt.subplot(gs1[0,0])
     #ax1_10 = plt.subplot(gs1[1,0])
@@ -366,11 +366,11 @@ def plot_candidate(filename,
     ax0_10.set_xticks([])
     ax0_11.set_xticks([])
     ax0_11.set_yticks([])
-    ax0_21.set_xticks([])
-    ax0_21.set_yticks([])
+    #ax0_21.set_xticks([])
+    #ax0_21.set_yticks([])
     ax0_00.margins(x=0)
     ax0_11.margins(y=0)
-    ax0_21.margins(y=0)
+    #ax0_21.margins(y=0)
 
     #ax0_00.set_ylabel("S/N", size = size)
     ax0_10.set_ylabel("Frequency (MHz)", size = size)
@@ -395,7 +395,7 @@ def plot_candidate(filename,
     ax0_20.imshow(dmt, aspect = "auto", extent = (-twin * 1e3 / 2, twin * 1e3, dmcand + dms[0], dmcand + dms[-1]))
 
     #ax0_21.plot(offdmcurve, dmcand + dms , linewidth = 2, color = "darkred", alpha = 0.5)
-    ax0_21.plot(ondmcurve,  dmcand + dms , linewidth = 2, color = "darkgreen", alpha = 0.9)
+    #ax0_21.plot(ondmcurve,  dmcand + dms , linewidth = 2, color = "darkgreen", alpha = 0.9)
 
 
     ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
