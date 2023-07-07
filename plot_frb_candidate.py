@@ -177,10 +177,9 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
 
     dedispdata = np.nan_to_num(dedispdata, nan=0)
 
-    dmrange = 0.4 * DM
+    dmrange = 1 * DM
 
     DMs = np.linspace(-dmrange, dmrange, dmsteps)
-    print(DMs)
 
     dmt = np.zeros((dmsteps, dedispdata.shape[1]))
 
@@ -319,7 +318,7 @@ def plot_candidate(filename,
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
-    ax0_20.imshow(dmt, aspect = "auto", extent = (-twin * 1e3 / 2, twin * 1e3, dmcand + dms[-1], dmcand + dms[0]))
+    ax0_20.imshow(dmt, aspect = "auto", extent = (-twin * 1e3 / 2, twin * 1e3, dmcand + dms[0], dmcand + dms[-1]))
 
     if (sk_flag is True):
         ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
