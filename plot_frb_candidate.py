@@ -266,11 +266,6 @@ def plot_candidate(filename,
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
 
-    if fbin_factor > 1:
-        data = bin_freq_channels(data, fbin_factor = fbin_factor)
-        dedispdata = bin_freq_channels(dedispdata, fbin_factor = fbin_factor)
-        freqs = np.linspace(freqs[0],freqs[-1],dedispdata.shape[0])
-
     dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand, ref_freq = "top")
 
     time = np.linspace(-twin / 2, twin / 2, dedispdata.shape[1])
@@ -283,9 +278,21 @@ def plot_candidate(filename,
 
     ondmcurve, offdmcurve = get_bandpass_onoff(dmt, wsamp)
 
-#    if (sk_flag is True):
-#        onbpass[badchans] = np.nan
-#        offbpass[badchans] = np.nan
+    if fbin_factor > 1:
+        data = bin_freq_channels(data, fbin_factor = fbin_factor)
+        dedispdata = bin_freq_channels(dedispdata, fbin_factor = fbin_factor)
+        freqs = np.linspace(freqs[0],freqs[-1],dedispdata.shape[0])
+
+    if tbin_factor > 1:
+        data = bin_time_samples(data, tbin_factor = tbin_factor)
+        dedispdata = bin_time_samples(dedispdata, tbin_factor = tbin_factor)
+        time = np.linspace(time[0],time[-1],dedispdata.shape[1])
+
+
+
+    if (sk_flag is True):
+        onbpass[badchans] = np.nan
+        offbpass[badchans] = np.nan
 
     figure = plt.figure(figsize = (10,7))
     size = 12
