@@ -143,7 +143,6 @@ def get_snr(timeseries, wsamp):
 
     mu  = np.mean(timeseries[mask]) # mean off-burst
     std = np.std(timeseries[mask])  # rms off-burst
-    print("mu,sig",mu,std)
     if std == 0:
       std = 1e-4
 
@@ -156,6 +155,25 @@ def get_snr(timeseries, wsamp):
     SNR = np.sum(timeseries - mu) / (std * np.sqrt(Weq))
 
     return SNR
+
+def get_bandpass_onoff(wfall, wsamp):
+
+    timeseries = np.nansum(wfall, axis = 0)
+
+    argmax = np.argmax(timeseries)
+
+    mask = np.ones(wfall, dtype = np.bool)
+    mask[argmax - wsamp // 2 : argmax + wsamp // 2] = 0
+
+    offpulsewfall = wfall[mask]
+    onpulsewfall  = wfall[~mask]
+
+    onpulsebpass  = np.nansum(onpulsewfall)
+    offpulsebpass = np.nansum(offpulsewall)
+
+    return onpulsebpass, offpulsebpass
+
+
 
 def plot_candidate(filename,
     tcand = 0,
@@ -221,7 +239,7 @@ def plot_candidate(filename,
     width, width_err = get_width(time,timeseries,2.355)
     wsamp = np.rint(width / dt).astype("int")
 
-
+    onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
 
     figure = plt.figure(figsize = (10,7))
@@ -271,6 +289,9 @@ def plot_candidate(filename,
 
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
+    ax0_11.plot(np.flipud(offbpass), channels, linewidth = 2, color = "darkred", alpha = 0.5)
+    ax0_11.plot(np.flipud(onbpass), channels, linewidth = 2, color = "darkgreen", alpha = 0.9)
+
     vmin = np.nanpercentile(dedispdata, 1)
     vmax = np.nanpercentile(dedispdata, 99)
     ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]),
@@ -278,6 +299,8 @@ def plot_candidate(filename,
     vmin = np.nanpercentile(data, 1)
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
+
+
 
     figure.text(0.650,0.950, f"File Information" ,fontsize = 10)
 
