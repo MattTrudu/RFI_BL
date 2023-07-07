@@ -240,12 +240,6 @@ def plot_candidate(filename,
     wsamp = np.rint(width / dt).astype("int")
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
-    if (sk_flag is True):
-        freqsf = np.copy(freqs)
-        freqsf[badchans]   = np.nan
-        onbpass[badchans]  = np.nan
-        offbpass[badchans] = np.nan
-
 
     figure = plt.figure(figsize = (10,7))
     size = 12
@@ -296,8 +290,8 @@ def plot_candidate(filename,
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
     if (sk_flag is True):
-        ax0_11.plot(offbpass, freqsf, linewidth = 2, color = "darkred", alpha = 0.5)
-        ax0_11.plot(onbpass,  freqsf,linewidth = 2, color = "darkgreen", alpha = 0.9)
+        ax0_11.plot(offbpass[badchans], freqs[badchans], linewidth = 2, color = "darkred", alpha = 0.5)
+        ax0_11.plot(onbpass[badchans],  freqs[badchans],linewidth = 2, color = "darkgreen", alpha = 0.9)
     else:
         ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
         ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
