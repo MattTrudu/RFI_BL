@@ -560,6 +560,7 @@ if __name__ == "__main__":
         sk_sig = sk_sig,
         fshape = fshape,
         tshape = tshape,
-        cstart = channel_start,
-        cstop  = channel_stop
+        grab_channels= grab_channels,
+        channel_start= channel_start,
+        channel_stop= channel_stop
         )
