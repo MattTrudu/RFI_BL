@@ -177,7 +177,7 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
 
     dedispdata = np.nan_to_num(dedispdata, nan=0)
 
-    dmrange = 0.5 * DM
+    dmrange = 0.4 * DM
 
     DMs = np.linspace(-dmrange, dmrange, dmsteps)
 
@@ -260,6 +260,8 @@ def plot_candidate(filename,
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
+    ondmcurve, offdmcurve = get_bandpass_onoff(dmt, wsamp)
+
 
     if (sk_flag is True):
         onbpass[badchans] = np.nan
@@ -321,6 +323,9 @@ def plot_candidate(filename,
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
     ax0_20.imshow(dmt, aspect = "auto", extent = (-twin * 1e3 / 2, twin * 1e3, dmcand + dms[0], dmcand + dms[-1]))
+
+    ax0_21.plot(offdmcurve, dmcand + dms , linewidth = 2, color = "darkred", alpha = 0.5)
+    ax0_21.plot(ondmcurve,  dmcand + dms , linewidth = 2, color = "darkgreen", alpha = 0.9)
 
     if (sk_flag is True):
         ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
