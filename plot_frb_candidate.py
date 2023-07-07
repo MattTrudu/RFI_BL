@@ -166,8 +166,7 @@ def get_bandpass_onoff(wfall, wsamp):
     array2 = wfall[:,argmax + wsamp // 2 : - 1]
     offpulsewfall = np.concatenate((array1, array2), axis=1)
     onpulsewfall  = wfall[:,argmax - wsamp // 2 : argmax + wsamp // 2]
-    print(offpulsewfall.shape)
-    print(onpulsewfall.shape)
+
 
     onpulsebpass  = np.nansum(onpulsewfall, axis = 1)
     offpulsebpass = np.nansum(offpulsewfall, axis = 1)
@@ -241,6 +240,9 @@ def plot_candidate(filename,
     wsamp = np.rint(width / dt).astype("int")
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
+    if (sk_flag is True):
+        onbpass[badchans] = np.nan
+        offbpass[badchans] = np.nan      
 
 
     figure = plt.figure(figsize = (10,7))
