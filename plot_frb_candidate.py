@@ -177,7 +177,7 @@ def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
 
     dedispdata = np.nan_to_num(dedispdata, nan=0)
 
-    dmrange = 1 * DM
+    dmrange = 0.5 * DM
 
     DMs = np.linspace(-dmrange, dmrange, dmsteps)
 
@@ -245,6 +245,8 @@ def plot_candidate(filename,
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
     data = data[:, ndelay : -1]
 
+    dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand)
+
     if (sk_flag is True):
         data[badchans, :] = np.nan
         dedispdata[badchans,:] = np.nan
@@ -257,7 +259,6 @@ def plot_candidate(filename,
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
-    dms, dmt = DMT(dedispdata, freqs, dt, DM = dmcand)
 
     if (sk_flag is True):
         onbpass[badchans] = np.nan
