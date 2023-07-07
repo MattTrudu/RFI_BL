@@ -173,7 +173,20 @@ def get_bandpass_onoff(wfall, wsamp):
 
     return onpulsebpass, offpulsebpass
 
+def DMT(dedispdata, freqs, dt, DM = 0, dmsteps = 256, ref_freq = "bottom"):
 
+    dmrange = 0.4 * DM
+
+    DMs = np.linspace(-dmrange, dmrange, dmsteps)
+
+    dmt = np.zeros((dmsteps, dedispdata.shape[1]))
+
+    for k,dm in enumerate(DMs):
+
+        data = dedisperse(dedispdata, dm, freqs, dt, ref_freq= ref_freq)
+        dmt[k,:] = np.nansum(dedispdata, axis = 0)
+
+    return dms,dmt
 
 def plot_candidate(filename,
     tcand = 0,
@@ -217,9 +230,7 @@ def plot_candidate(filename,
 
     if (sk_flag is True):
         badchans = sk_filter(data[:, ndelay : -1].T, df, dt, sigma = sk_sig)
-        badchans[100:200] = 1
-        badchans[300:400] = 1
-        badchans[500:550] = 1
+
 
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
@@ -243,6 +254,8 @@ def plot_candidate(filename,
     wsamp = np.rint(width / dt).astype("int")
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
+
+    dms, dmt = DMT(dedispdata, freqs, dt=
 
     if (sk_flag is True):
         onbpass[badchans] = np.nan
@@ -302,6 +315,8 @@ def plot_candidate(filename,
     vmin = np.nanpercentile(data, 1)
     vmax = np.nanpercentile(data, 99)
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
+
+    ax0_20.imshow(dmt, aspect = "auto", extent = (-twin / 2, twin /2, dms[-1], dms[0]))
 
     if (sk_flag is True):
         ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
