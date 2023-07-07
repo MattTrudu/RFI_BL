@@ -254,10 +254,11 @@ def plot_candidate(filename,
     gs0  = plt.GridSpec(3,2,hspace = 0.0 , wspace = 0,  width_ratios = widths0, height_ratios = heights0, top = 0.99 , bottom = 0.1, right = 0.55, left = 0.10)
     gs1  = plt.GridSpec(3,1,hspace = 0.0 , wspace = 0,  width_ratios = widths1, height_ratios = heights1, top = 0.99 , bottom = 0.1, right = 0.99, left = 0.65)
 
-    ax0_00 = plt.subplot(gs0[0,0])
+
     #ax0_01 = plt.subplot(gs0[0,1])
     ax0_10 = plt.subplot(gs0[1,0])
-    ax0_11 = plt.subplot(gs0[1,1])
+    ax0_00 = plt.subplot(gs0[0,0], sharex = ax0_10)
+    ax0_11 = plt.subplot(gs0[1,1], sharey = ax0_10)
     ax0_20 = plt.subplot(gs0[2,0])
     ax0_21 = plt.subplot(gs0[2,1])
 
@@ -289,8 +290,8 @@ def plot_candidate(filename,
 
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
 
-    ax0_11.plot(np.flipud(offbpass), channels, linewidth = 2, color = "darkred", alpha = 0.5)
-    ax0_11.plot(np.flipud(onbpass), channels, linewidth = 2, color = "darkgreen", alpha = 0.9)
+    ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
+    ax0_11.plot(onbpass, freqs, linewidth = 2, color = "darkgreen", alpha = 0.9)
 
     vmin = np.nanpercentile(dedispdata, 1)
     vmax = np.nanpercentile(dedispdata, 99)
