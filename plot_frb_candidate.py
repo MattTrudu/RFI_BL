@@ -309,7 +309,7 @@ def plot_candidate(filename,
         badchans = sk_filter(data[:, ndelay : -1].T, df, dt, sigma = sk_sig)
 
     if klt_clean:
-        neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+        neig, ev, evecs, rfitemplate = klt(data, var_frac)
         data -=  rfitemplate
 
     #data = renormalize_data(data)
