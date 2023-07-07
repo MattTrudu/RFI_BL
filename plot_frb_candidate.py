@@ -291,6 +291,13 @@ def plot_candidate(filename,
     #data[np.isnan(data)] = np.nanmedian(data)
 
     ax0_00.plot(timeseries , color = "darkblue", linewidth = 2)
+    vmin = np.nanpercentile(dedispdata, 1)
+    vmax = np.nanpercentile(dedispdata, 99)
+    ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]),
+                    cmap = "inferno")
+    vmin = np.nanpercentile(data, 1)
+    vmax = np.nanpercentile(data, 99)
+    ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
     if (sk_flag is True):
         offbpass[~badchans] = 0
@@ -302,13 +309,6 @@ def plot_candidate(filename,
         ax0_11.step(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
         ax0_11.step(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
-    vmin = np.nanpercentile(dedispdata, 1)
-    vmax = np.nanpercentile(dedispdata, 99)
-    ax0_10.imshow(dedispdata, aspect = "auto", extent = (-delay/2, delay/2, freqs[-1], freqs[0]),
-                    cmap = "inferno")
-    vmin = np.nanpercentile(data, 1)
-    vmax = np.nanpercentile(data, 99)
-    ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
 
 
