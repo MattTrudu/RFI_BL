@@ -208,9 +208,9 @@ def downsample_mask(badchans, newshape):
 
     ratio = int(oldshape / newshape)
 
-    downbadchans = np.zeros((newshape,), dtype = np.int)
+    downbadchans = np.zeros((newshape,), dtype = int)
 
-    badchansn = np.zeros((oldshape,) , dtype = np.int)
+    badchansn = np.zeros((oldshape,) , dtype = int)
     badchansn[badchans] = 1
 
     for k in range(newshape):
@@ -219,7 +219,7 @@ def downsample_mask(badchans, newshape):
         ind = np.argmax(counts)
         downbadchans[k] = values[ind]
 
-    downbadchans = np.asarray(downbadchans, dtype = np.bool)
+    downbadchans = np.asarray(downbadchans, dtype = bool)
     return downbadchans
 
 def plot_candidate(filename,
@@ -305,7 +305,7 @@ def plot_candidate(filename,
         time = np.linspace(time[0], time[-1], tshape)
         dt = abs(time[0] - time[1])
 
-
+    timeseries = np.nansum(dedispdata, axis=0)
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
