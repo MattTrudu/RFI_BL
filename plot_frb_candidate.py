@@ -7,6 +7,7 @@ from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter
+from skimage.transform import resize
 import getpass
 from datetime import datetime
 from tqdm import tqdm
@@ -197,14 +198,29 @@ def bin_freq_channels(data, fbin_factor = 1):
     data = np.nanmean(data.reshape((num_chan // fbin_factor, fbin_factor) + data.shape[1:]), axis=1)
     return data
 
-def bin_time_samples(data, tbin_factor = 1):
-    num_samples = data.shape[1]
-    if num_samples % tbin_factor != 0:
-        data = data[:,0: num_samples * tbin_factor]
-        data = np.nanmean(data.reshape(data.shape[0], num_samples // tbin_factor, tbin_factor), axis=2)
-    else:
-        data = np.nanmean(data.reshape(data.shape[0], num_samples // tbin_factor, tbin_factor), axis=2)
-    return data
+def downsample_mask(badchans, newshape):
+
+    """
+    Downsample an RFI mask. It considers, as way of downsampling, group of channels and from them it takes as a new downsampled value the most common value between 0 or 1.
+    """
+
+    oldshape = badchans.shape[0]
+
+    ratio = int(oldshape / newshape)
+
+    downbadchans = np.zeros((newshape,), dtype = np.int)
+
+    badchansn = np.zeros((oldshape,) , dtype = np.int)
+    badchansn[badchans] = 1
+
+    for k in range(newshape):
+
+        values, counts = np.unique(badchansn[k * ratio : (k+1) * ratio], return_counts = True)
+        ind = np.argmax(counts)
+        downbadchans[k] = values[ind]
+
+    downbadchans = np.asarray(downbadchans, dtype = np.bool)
+    return downbadchans
 
 def plot_candidate(filename,
     tcand = 0,
@@ -216,8 +232,8 @@ def plot_candidate(filename,
     sk_flag = False,
     sk_sig = 3,
     twin = 100,
-    fbin_factor = 1,
-    tbin_factor = 1
+    fshape = None,
+    tshape = None
     ):
 
     filedir, name = os.path.split(filename)
@@ -276,25 +292,28 @@ def plot_candidate(filename,
     width, width_err = get_width(time,timeseries,2.355)
     wsamp = np.rint(width / dt).astype("int")
 
+    if fshape is not None:
+        data = resize(data, (fshape, data.shape[1]), anti_aliasing = True)
+        dedispdata = resize(dedispdata, (fshape, data.shape[1]), anti_aliasing = True)
+        freqs = np.linspace(freqs[0], freqs[-1], fshape)
+        df = freqs[0] - freqs[1]
+        badchans = downsample_mask(badchans, fshape)
+    if tshape is not None:
+        data = resize(data, (data.shape[0], tshape), anti_aliasing = True)
+        dedispdata = resize(dedispdata, (data.shape[0], tshape), anti_aliasing = True)
+        time = np.linspace(time[0], time[-1], tshape)
+        dt = abs(time[0] - time[1])
 
-    if fbin_factor > 1:
-        data = bin_freq_channels(data, fbin_factor = fbin_factor)
-        dedispdata = bin_freq_channels(dedispdata, fbin_factor = fbin_factor)
-        freqs = np.linspace(freqs[0],freqs[-1],dedispdata.shape[0])
 
-    if tbin_factor > 1:
-        data = bin_time_samples(data, tbin_factor = tbin_factor)
-        dedispdata = bin_time_samples(dedispdata, tbin_factor = tbin_factor)
-        time = np.linspace(time[0],time[-1],dedispdata.shape[1])
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
     ondmcurve, offdmcurve = get_bandpass_onoff(dmt, wsamp)
 
 
-    #if (sk_flag is True):
-    #    onbpass[badchans] = np.nan
-    #    offbpass[badchans] = np.nan
+    if (sk_flag is True):
+        onbpass[badchans] = np.nan
+        offbpass[badchans] = np.nan
 
     figure = plt.figure(figsize = (10,7))
     size = 12
@@ -463,19 +482,19 @@ def _get_parser():
                         action = "store" ,
                         help = "Sigma for the Spectral Kurtosis (Default: 3)"
                         )
-    parser.add_argument('-fb',
-                        '--fbin_factor',
+    parser.add_argument('-fs',
+                        '--f_shape',
                         type = int,
-                        default = 1,
+                        default = 256,
                         action = "store" ,
-                        help = "Factor to downsample the data in frequency (Default: 1, not downsample)"
+                        help = "Shape of the data in frequency (Default: 256)"
                         )
     parser.add_argument('-tb',
-                        '--tbin_factor',
+                        '--t_shape',
                         type = int,
-                        default = 1,
+                        default = 256,
                         action = "store" ,
-                        help = "Factor to downsample the data in time (Default: 1, not downsample)"
+                        help = "Shape of the data in time (Default: 256)"
                         )
     return parser.parse_args()
 
@@ -493,8 +512,8 @@ if __name__ == "__main__":
     twin        = args.time_window
     sk_flag     = args.spectral_kurtosis
     sk_sig      = args.spectral_kurtosis_sigma
-    fbin_factor = args.fbin_factor
-    tbin_factor = args.tbin_factor
+    fshape      = args.f_shape
+    tshape      = args.t_shape
 
     plot_candidate(filename,
         tcand = tcand,
@@ -506,6 +525,6 @@ if __name__ == "__main__":
         twin = twin,
         sk_flag = sk_flag,
         sk_sig = sk_sig,
-        fbin_factor = fbin_factor,
-        tbin_factor = tbin_factor
+        fshape = fshape,
+        tshape = tshape
         )
