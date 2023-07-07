@@ -283,10 +283,9 @@ def plot_candidate(filename,
 
     ondmcurve, offdmcurve = get_bandpass_onoff(dmt, wsamp)
 
-
-    if (sk_flag is True):
-        onbpass[badchans] = np.nan
-        offbpass[badchans] = np.nan
+#    if (sk_flag is True):
+#        onbpass[badchans] = np.nan
+#        offbpass[badchans] = np.nan
 
     figure = plt.figure(figsize = (10,7))
     size = 12
