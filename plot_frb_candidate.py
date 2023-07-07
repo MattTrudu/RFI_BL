@@ -217,6 +217,7 @@ def plot_candidate(filename,
 
     if (sk_flag is True):
         badchans = sk_filter(data[:, ndelay : -1].T, df, dt, sigma = sk_sig)
+        badchans[0:100] = 1
 
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
@@ -242,7 +243,7 @@ def plot_candidate(filename,
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
     if (sk_flag is True):
         onbpass[badchans] = np.nan
-        offbpass[badchans] = np.nan      
+        offbpass[badchans] = np.nan
 
 
     figure = plt.figure(figsize = (10,7))
