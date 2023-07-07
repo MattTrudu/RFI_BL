@@ -223,6 +223,41 @@ def downsample_mask(badchans, newshape):
     downbadchans = np.asarray(downbadchans, dtype = bool)
     return downbadchans
 
+def eigenbasis(matrix):
+
+    """
+    Compute the eigenvalues and the eigenvectors of a square matrix and return the eigenspectrum (eigenvalues sorted in decreasing order) and the sorted eigenvectors respect
+    to the eigenspectrum for the KLT analysis
+    """
+
+    eigenvalues,eigenvectors = np.linalg.eigh(matrix)
+
+    if eigenvalues[0] < eigenvalues[-1]:
+        eigenvalues = np.flipud(eigenvalues)
+        eigenvectors = np.fliplr(eigenvectors)
+    eigenspectrum = eigenvalues
+    return eigenspectrum,eigenvectors
+
+def count_elements_for_threshold(arr, threshold):
+    sorted_arr = np.sort(arr)[::-1]  # Sort array in descending order
+    total_sum = np.sum(sorted_arr)
+    cumulative_sum = np.cumsum(sorted_arr)
+    num_elements = np.searchsorted(cumulative_sum, threshold * total_sum, side='right') + 1
+    return num_elements
+
+def klt(signals, threshold):
+
+    R = np.cov((signals-np.mean(signals,axis=0)),rowvar=False)
+
+    eigenspectrum,eigenvectors = eigenbasis(R)
+
+    neig = count_elements_for_threshold(eigenspectrum, threshold)
+
+    coeff = np.matmul((signals[:,:]-np.mean(signals,axis=0)),np.conjugate((eigenvectors[:,:])))
+    recsignals = np.matmul(coeff[:,0:int(neig)],np.transpose(eigenvectors[:,0:int(neig)])) + np.mean(signals,axis=0)
+
+    return neig,eigenspectrum,eigenvectors,recsignals
+
 def plot_candidate(filename,
     tcand = 0,
     dmcand = 0,
@@ -237,7 +272,9 @@ def plot_candidate(filename,
     tshape = None,
     grab_channels = False,
     channel_start = None,
-    channel_stop = None
+    channel_stop = None,
+    klt_clean = False,
+    var_frac = 0.3
     ):
 
     filedir, name = os.path.split(filename)
@@ -271,6 +308,9 @@ def plot_candidate(filename,
     if (sk_flag is True):
         badchans = sk_filter(data[:, ndelay : -1].T, df, dt, sigma = sk_sig)
 
+    if klt_clean:
+        neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+        data -=  rfitemplate
 
     #data = renormalize_data(data)
 
@@ -522,13 +562,26 @@ def _get_parser():
                         help = "Shape of the data in time (Default: 256)"
                         )
     parser.add_argument(
-        "-c",
-        "--grab_channels",
-        help="Grab a portion of the data in frequency channels. Usage -c cstart cstop (Default = False).",
-        nargs=2,
-        type=int,
-        default=None,
-    )
+                        "-c",
+                        "--grab_channels",
+                        help="Grab a portion of the data in frequency channels. Usage -c cstart cstop (Default = False).",
+                        nargs=2,
+                        type=int,
+                        default=None,
+                        )
+    parser.add_argument('-klt',
+                        '--karhunen_loeve_cleaning',
+                        help = "Evaluate an RFI template via a KLT and remove it from the data. Default = False.",
+                        action = 'store_true',
+                        )
+    parser.add_argument('-var_frac',
+                        '--variance_fraction',
+                        type = float,
+                        default = 0.3,
+                        action = "store" ,
+                        help = "The fraction of the total variance of the signal to consider (between 0 and 1). The number of associated eigenvalues will be computed from this. (Default: 0.3)"
+                        )
+
 
 
     return parser.parse_args()
@@ -551,6 +604,9 @@ if __name__ == "__main__":
     tshape      = args.t_shape
     grab_channels = args.grab_channels is not None
     channel_start, channel_stop = args.grab_channels or (None, None)
+    klt_clean   = args.karhunen_loeve_cleaning
+    var_frac    = args.variance_fraction
+
 
     plot_candidate(filename,
         tcand = tcand,
@@ -566,5 +622,7 @@ if __name__ == "__main__":
         tshape = tshape,
         grab_channels= grab_channels,
         channel_start= channel_start,
-        channel_stop= channel_stop
+        channel_stop= channel_stop,
+        klt_clean = klt_clean,
+        var_frac = var_frac
         )
