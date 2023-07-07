@@ -218,6 +218,8 @@ def plot_candidate(filename,
     if (sk_flag is True):
         badchans = sk_filter(data[:, ndelay : -1].T, df, dt, sigma = sk_sig)
         badchans[100:200] = 1
+        badchans[300:400] = 1
+        badchans[500:550] = 1
 
     data = renormalize_data(data)
     dedispdata = dedisperse(data, dmcand, freqs, dt)
