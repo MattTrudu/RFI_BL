@@ -234,9 +234,9 @@ def plot_candidate(filename,
     twin = 100,
     fshape = None,
     tshape = None,
-    grab_channels=False,
-    channel_start=None,
-    channel_stop=None
+    grab_channels = False,
+    channel_start = None,
+    channel_stop = None
     ):
 
     filedir, name = os.path.split(filename)
@@ -506,14 +506,14 @@ def _get_parser():
     parser.add_argument('-fs',
                         '--f_shape',
                         type = int,
-                        default = 256,
+                        default = None,
                         action = "store" ,
                         help = "Shape of the data in frequency (Default: 256)"
                         )
     parser.add_argument('-ts',
                         '--t_shape',
                         type = int,
-                        default = 256,
+                        default = None,
                         action = "store" ,
                         help = "Shape of the data in time (Default: 256)"
                         )
