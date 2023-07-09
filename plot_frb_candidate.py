@@ -360,7 +360,8 @@ def plot_candidate(filename,
         dedispdata = resize(dedispdata, (fshape, data.shape[1]), anti_aliasing = True)
         freqs = np.linspace(freqs[0], freqs[-1], fshape)
         df = freqs[0] - freqs[1]
-        badchans = downsample_mask(badchans, fshape)
+        if (sk_flag is True):
+            badchans = downsample_mask(badchans, fshape)
     if tshape is not None:
         data = resize(data, (data.shape[0], tshape), anti_aliasing = True)
         dedispdata = resize(dedispdata, (data.shape[0], tshape), anti_aliasing = True)
