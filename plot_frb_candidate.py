@@ -96,8 +96,9 @@ def renormalize_data(array):
     renorm_data = np.copy(array)
     spec = renorm_data.mean(1)
 
-    for i, newd in enumerate(renorm_data):
-        renorm_data[i, :] = (newd - spec[i]) / spec[i]
+    renorm_data -= spec[:, np.newaxis]
+    #for i, newd in enumerate(renorm_data):
+    #    renorm_data[i, :] = (newd - spec[i]) / spec[i]
 
     baseline = np.mean(renorm_data, axis=0)
 
@@ -312,7 +313,7 @@ def plot_candidate(filename,
         neig, ev, evecs, rfitemplate = klt(data, var_frac)
         data -=  rfitemplate
 
-    #data = renormalize_data(data)
+    data = renormalize_data(data)
 
     dedispdata = dedisperse(data, dmcand, freqs, dt)
 
