@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # Access the data and metadata as needed
     header = data.header
     spectrogram = data.data
-    print(data.shape)
+
 
     # Create a new .h5 file using h5py
 
