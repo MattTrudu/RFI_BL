@@ -275,7 +275,8 @@ def plot_candidate(filename,
     channel_start = None,
     channel_stop = None,
     klt_clean = False,
-    var_frac = 0.3
+    var_frac = 0.3,
+    renorm_flag = True
     ):
 
     filedir, name = os.path.split(filename)
@@ -313,7 +314,8 @@ def plot_candidate(filename,
         neig, ev, evecs, rfitemplate = klt(data, var_frac)
         data -=  rfitemplate
 
-    data = renormalize_data(data)
+    if renorm_flag:
+        data = renormalize_data(data)
 
     dedispdata = dedisperse(data, dmcand, freqs, dt)
 
@@ -531,6 +533,12 @@ def _get_parser():
         action="store_true",
     )
     parser.add_argument(
+        "-nr",
+        "--no_renorm",
+        help="Do not renormalize the data",
+        action="store_false",
+    )
+    parser.add_argument(
         "-ff",
         "--file_format",
         action="store",
@@ -608,6 +616,7 @@ if __name__ == "__main__":
     channel_start, channel_stop = args.grab_channels or (None, None)
     klt_clean   = args.karhunen_loeve_cleaning
     var_frac    = args.variance_fraction
+    renorm_flag = args.no_renorm
 
 
     plot_candidate(filename,
@@ -626,5 +635,6 @@ if __name__ == "__main__":
         channel_start= channel_start,
         channel_stop= channel_stop,
         klt_clean = klt_clean,
-        var_frac = var_frac
+        var_frac = var_frac,
+        renorm_flag = renorm_flag
         )
