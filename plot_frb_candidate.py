@@ -97,8 +97,6 @@ def renormalize_data(array):
     spec = renorm_data.mean(1)
 
     renorm_data -= spec[:, np.newaxis]
-    #for i, newd in enumerate(renorm_data):
-    #    renorm_data[i, :] = (newd - spec[i]) / spec[i]
 
     baseline = np.mean(renorm_data, axis=0)
 

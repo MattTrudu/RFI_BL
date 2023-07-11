@@ -46,6 +46,19 @@ def dedisperse(wfall, DM, freq, dt, ref_freq="top"):
         dedisp[i] = np.roll(ts, shift[i])
     return dedisp
 
+def renormalize_data(array):
+
+    renorm_data = np.copy(array)
+    spec = renorm_data.mean(1)
+
+    renorm_data -= spec[:, np.newaxis]
+
+    baseline = np.mean(renorm_data, axis=0)
+
+    renorm_data -= baseline
+
+    return renorm_data
+
 def plot_data(
     filename,
     output_dir=os.getcwd(),
@@ -57,7 +70,8 @@ def plot_data(
     channel_start=None,
     channel_stop=None,
     save_flag=True,
-    file_format=".png"):
+    file_format=".png",
+    renorm_flag = False):
 
     filedir, name = os.path.split(filename)
 
@@ -99,6 +113,9 @@ def plot_data(
             cstop = nchan
         data = data[cstart:cstop,:]
         channels = channels[cstart:cstop]
+
+    if renorm_flag:
+        data = renormalize_data(data)
 
     timeseries = np.mean(data, axis=0)
     spectrum = np.mean(data, axis=1)
@@ -208,6 +225,13 @@ def _get_parser():
         default=".png",
     )
 
+    parser.add_argument(
+        "-r",
+        "--renorm",
+        help="Renormalize the data",
+        action="store_true",
+    )
+
     return parser.parse_args()
 
 
@@ -224,6 +248,7 @@ if __name__ == "__main__":
     grab_channels = args.grab_channels is not None
     channel_start, channel_stop = args.grab_channels or (None, None)
     fileformat = args.file_format
+    renorm_flag = args.renorm
 
     plot_data(
         filename,
@@ -237,4 +262,4 @@ if __name__ == "__main__":
         channel_stop=channel_stop,
         save_flag=save_flag,
         file_format=fileformat,
-    )
+        renorm_flag = renorm_flag)
