@@ -257,6 +257,16 @@ def klt(signals, threshold):
 
     return neig,eigenspectrum,eigenvectors,recsignals
 
+def dm_delay_curve(tstart, freqs, t0, DM):
+
+    times = np.ones(freqs.shape[0]) * tstart - t0
+
+    for k,f in enumerate(freqs):
+        dt = dispersion_delay(f, freqs[0], dms = DM)
+        times[k] = times[k] + dt
+
+    return times
+
 def plot_candidate(filename,
     tcand = 0,
     dmcand = 0,
@@ -436,6 +446,13 @@ def plot_candidate(filename,
                     cmap = "inferno")
     vmin = np.nanpercentile(data, 1)
     vmax = np.nanpercentile(data, 99)
+
+    tp = dm_delay_curve(0, freqs, 0.0, dmcand)
+    ax1_20.set_ylim(freqs[-1],freqs[0])
+    ax1_20.hlines(freqs[cstart], xmin = 0, xmax = delay, color = "lime", linewidth = 4)
+    ax1_20.hlines(freqs[cstop],  xmin = 0, xmax = delay, color = "lime", linewidth = 4)
+    ax1_20.plot(tp, (1-0.01)*freqs, color = "white", linewidth = 3, linestyle = "dashed")
+    ax1_20.plot(tp, (1+0.01)*freqs, color = "white", linewidth = 3, linestyle = "dashed")
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
 
     ax0_20.imshow(dmt, aspect = "auto", extent = (-twin * 1e3 / 2, twin * 1e3 / 2, dmcand + dms[0], dmcand + dms[-1]))
