@@ -449,8 +449,11 @@ def plot_candidate(filename,
 
     tp = dm_delay_curve(0, freqs, 0.0, dmcand)
     ax1_20.set_ylim(freqs[-1],freqs[0])
-    ax1_20.hlines(freqs[cstart], xmin = 0, xmax = delay, color = "lime", linewidth = 4)
-    ax1_20.hlines(freqs[cstop],  xmin = 0, xmax = delay, color = "lime", linewidth = 4)
+    ax1_20.hlines(freqs[0], xmin = 0, xmax = delay, color = "lime", linewidth = 4)
+    ax1_20.hlines(freqs[-1],  xmin = 0, xmax = delay, color = "lime", linewidth = 4)
+    if grab_channels:
+        ax1_20.hlines(freqs[cstart], xmin = 0, xmax = delay, color = "lime", linewidth = 4)
+        ax1_20.hlines(freqs[cstop],  xmin = 0, xmax = delay, color = "lime", linewidth = 4)
     ax1_20.plot(tp, (1-0.01)*freqs, color = "white", linewidth = 3, linestyle = "dashed")
     ax1_20.plot(tp, (1+0.01)*freqs, color = "white", linewidth = 3, linestyle = "dashed")
     ax1_20.imshow(data, aspect = "auto", extent = (0, delay, freqs[-1], freqs[0]), cmap = "inferno")
