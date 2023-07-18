@@ -495,7 +495,7 @@ def plot_candidate(filename,
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
     figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
     figure.text(0.650,0.750, f"Candidate peak S/N = {snr:.2f}" ,fontsize = 10)
-    figure.text(0.650,0.725, f"Candidate FWHM width (ms) = {width*1e3:.2f}" ,fontsize = 10)
+    figure.text(0.650,0.725, f"Candidate FWHM width (ms) = {width:.2f}" ,fontsize = 10)
 
 
     username = getpass.getuser()
@@ -688,5 +688,5 @@ if __name__ == "__main__":
         var_frac = var_frac,
         renorm_flag = renorm_flag,
         snr = snr,
-        width = width 
+        width = width
         )
