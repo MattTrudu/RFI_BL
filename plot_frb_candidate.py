@@ -373,11 +373,22 @@ def plot_candidate(filename,
         if (sk_flag is True):
             badchans = downsample_mask(badchans, fshape)
     if tshape is not None:
+        print("data.shape (before):", data.shape)
+        print("dedispdata.shape (before):", dedispdata.shape)
+        print("dmt.shape: (before)", dmt.shape)
+        print("len(time): (before)", len(time))
+        print("dt: (before)", dt)
         data = resize(data, (data.shape[0], tshape), anti_aliasing = True)
         dedispdata = resize(dedispdata, (data.shape[0], tshape), anti_aliasing = True)
         dmt = resize(dmt, (dmt.shape[0], tshape), anti_aliasing = True)
         time = np.linspace(time[0], time[-1], tshape)
         dt = abs(time[0] - time[1])
+        print("data.shape (after):", data.shape)
+        print("dedispdata.shape (after):", dedispdata.shape)
+        print("dmt.shape: (after)", dmt.shape)
+        print("len(time): (after)", len(time))
+        print("dt: (after)", dt)
+
 
     timeseries = np.nansum(dedispdata, axis=0)
     wsamp = np.rint(width / dt).astype("int")
@@ -580,14 +591,14 @@ def _get_parser():
                         type = int,
                         default = None,
                         action = "store" ,
-                        help = "Shape of the data in frequency (Default: 256)"
+                        help = "Shape of the data in frequency"
                         )
     parser.add_argument('-ts',
                         '--t_shape',
                         type = int,
                         default = None,
                         action = "store" ,
-                        help = "Shape of the data in time (Default: 256)"
+                        help = "Shape of the data in time"
                         )
     parser.add_argument(
                         "-c",
