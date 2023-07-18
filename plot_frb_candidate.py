@@ -484,7 +484,7 @@ def plot_candidate(filename,
     ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
     ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
-    max_line_width = 50
+    max_line_width = 30
     wrapped_text = textwrap.fill(f"File directory: {filedir}", width=max_line_width)
     figure.text(0.650, 0.875, f"File directory: {wrapped_text}", fontsize=10)
 
