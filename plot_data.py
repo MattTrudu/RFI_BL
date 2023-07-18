@@ -222,7 +222,7 @@ def _get_parser():
         "--file_format",
         action="store",
         help="Format of the candidate image (Default: .png).",
-        default=".png",
+        default="png",
     )
 
     parser.add_argument(
