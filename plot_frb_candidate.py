@@ -485,11 +485,14 @@ def plot_candidate(filename,
     ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
 
-
     info_box_text = f"File name: {name}\nFile directory: {filedir}\nCandidate arrival time (s) = {tcand}\nCandidate DM (pc·cm⁻³) = {dmcand}\nCandidate peak S/N = {snr:.2f}\nCandidate FWHM width (ms) = {width:.2f}"
-    wrapped_text = textwrap.fill(info_box_text, width=40)
-    info_box = figure.text(0.65, 0.4, wrapped_text, fontsize=10, bbox=dict(facecolor='white', alpha=0.9, edgecolor='black'))
 
+    # Wrap the text to fit in the info box
+    wrapper = textwrap.TextWrapper(width=30)
+    wrapped_text = wrapper.wrap(info_box_text)
+    wrapped_text = "\n".join(wrapped_text)
+
+    info_box = figure.text(0.65, 0.65, wrapped_text, fontsize=10, bbox=dict(facecolor='white', alpha=0.9, edgecolor='black'))
 
     """
     wrapped_text = textwrap.fill(f"File directory: {filedir}", width=max_line_width)
