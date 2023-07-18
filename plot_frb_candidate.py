@@ -488,7 +488,7 @@ def plot_candidate(filename,
 
     info_box_text = f"File name: {name}\nFile directory: {filedir}\nCandidate arrival time (s) = {tcand}\nCandidate DM (pc·cm⁻³) = {dmcand}\nCandidate peak S/N = {snr:.2f}\nCandidate FWHM width (ms) = {width:.2f}"
     wrapped_text = textwrap.fill(info_box_text, width=40)
-    info_box = figure.text(0.7, 0.2, wrapped_text, fontsize=10, bbox=dict(facecolor='white', alpha=0.9, edgecolor='black'))
+    info_box = figure.text(0.65, 0.4, wrapped_text, fontsize=10, bbox=dict(facecolor='white', alpha=0.9, edgecolor='black'))
 
 
     """
