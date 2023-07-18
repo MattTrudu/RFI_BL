@@ -485,7 +485,7 @@ def plot_candidate(filename,
     ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
 
-    info_box_text = f"File name: {name} \n File directory: {filedir} \n Candidate arrival time (s) = {tcand} \n Candidate DM (pc·cm⁻³) = {dmcand} \n Candidate peak S/N = {snr:.2f} \n Candidate FWHM width (ms) = {width:.2f}"
+    info_box_text = f"File name: {name} \n File directory: {filedir} \n Candidate arrival time (s) = {tcand} \n Candidate DM (pc·cm⁻³) = {dmcand} \n Candidate peak S/N = {snr:.2f} \n Candidate boxcar width (ms) = {width:.2f}"
 
     # Wrap the text to fit in the info box
     wrapper = textwrap.TextWrapper(width=40)
