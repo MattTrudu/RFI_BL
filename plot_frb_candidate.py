@@ -485,18 +485,7 @@ def plot_candidate(filename,
     ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
     max_line_width = 40
-    #infotext = f"""
-    #            File Information \n
-    #            File name : {name} \n
-    #            File directory : {filedir} \n
-    #            Candidate Information \n
-    #            Candidate arrival time (s) = {tcand} \n
-    #            Candidate DM (pc / cc) = {dmcand} \n
-    #            Candidate width (ms) = {width} \n
-    #            Candidate S/N = {snr}
 
-
-    #            """
     wrapped_text = textwrap.fill(f"File directory: {filedir}", width=max_line_width)
     #figure.text(0.650, 0.950, wrapped_text, fontsize=10)
 
