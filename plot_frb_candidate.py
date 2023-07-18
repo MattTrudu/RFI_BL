@@ -487,20 +487,20 @@ def plot_candidate(filename,
     max_line_width = 40
 
     wrapped_text = textwrap.fill(f"File directory: {filedir}", width=max_line_width)
-    #figure.text(0.650, 0.950, wrapped_text, fontsize=10)
 
 
 
-    #figure.text(0.650,0.750, f"File Information" ,fontsize = 10)
 
-    #figure.text(0.650,0.700, f"File name: {name}" ,fontsize = 10)
+    figure.text(0.650,0.750, f"File Information" ,fontsize = 10)
+
+    figure.text(0.650,0.700, f"File name: {name}" ,fontsize = 10)
     figure.text(0.650,0.675, f"File directory: {wrapped_text}" ,fontsize = 310
 
-    #figure.text(0.650,0.950, f"Candidate Information" ,fontsize = 10)
-    #figure.text(0.650,0.900, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
-    #figure.text(0.650,0.875, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
-    #figure.text(0.650,0.850, f"Candidate peak S/N = {snr:.2f}" ,fontsize = 10)
-    #figure.text(0.650,0.825, f"Candidate FWHM width (ms) = {width:.2f}" ,fontsize = 10)
+    figure.text(0.650,0.950, f"Candidate Information" ,fontsize = 10)
+    figure.text(0.650,0.900, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
+    figure.text(0.650,0.875, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
+    figure.text(0.650,0.850, f"Candidate peak S/N = {snr:.2f}" ,fontsize = 10)
+    figure.text(0.650,0.825, f"Candidate FWHM width (ms) = {width:.2f}" ,fontsize = 10)
 
 
     username = getpass.getuser()
