@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sigpyproc.Filterbank import Filterbank
 from sigpyproc.Readers import FilReader
 import scipy
+import textwrap
 from scipy.signal import correlate
 from scipy.linalg import toeplitz
 from scipy.signal import savgol_filter
@@ -483,20 +484,23 @@ def plot_candidate(filename,
     ax0_11.plot(offbpass, freqs, linewidth = 2, color = "darkred", alpha = 0.5)
     ax0_11.plot(onbpass,  freqs,linewidth = 2, color = "darkgreen", alpha = 0.9)
 
+    max_line_width = 50
+    wrapped_text = textwrap.fill(f"File directory: {filedir}", width=max_line_width)
+    figure.text(0.650, 0.875, f"File directory: {wrapped_text}", fontsize=10)
 
 
-
+    """
     figure.text(0.650,0.950, f"File Information" ,fontsize = 10)
 
     figure.text(0.650,0.900, f"File name: {name}" ,fontsize = 10)
-    figure.text(0.650,0.875, f"File directory: {filedir}" ,fontsize = 3)
+    figure.text(0.650,0.875, f"File directory: {filedir}" ,fontsize = 310
 
     figure.text(0.650,0.825, f"Candidate Information" ,fontsize = 10)
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
     figure.text(0.650,0.775, r"Candidate DM (pc$\times$cm$^{-3}$) = " + f"{dmcand}" ,fontsize = 10)
     figure.text(0.650,0.750, f"Candidate peak S/N = {snr:.2f}" ,fontsize = 10)
     figure.text(0.650,0.725, f"Candidate FWHM width (ms) = {width:.2f}" ,fontsize = 10)
-
+    """
 
     username = getpass.getuser()
     datetimenow = datetime.utcnow()
