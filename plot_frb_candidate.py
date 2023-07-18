@@ -473,7 +473,7 @@ def plot_candidate(filename,
     figure.text(0.650,0.950, f"File Information" ,fontsize = 10)
 
     figure.text(0.650,0.900, f"File name: {name}" ,fontsize = 10)
-    figure.text(0.650,0.875, f"File directory: {filedir}" ,fontsize = 10)
+    figure.text(0.650,0.875, f"File directory: {filedir}" ,fontsize = 3)
 
     figure.text(0.650,0.825, f"Candidate Information" ,fontsize = 10)
     figure.text(0.650,0.800, f"Candidate arrival time (s) = {tcand}" ,fontsize = 10)
