@@ -284,7 +284,9 @@ def plot_candidate(filename,
     channel_stop = None,
     klt_clean = False,
     var_frac = 0.3,
-    renorm_flag = True
+    renorm_flag = True,
+    width = 1, #ms
+    snr = 10
     ):
 
     filedir, name = os.path.split(filename)
@@ -305,10 +307,16 @@ def plot_candidate(filename,
     freqs = np.linspace(ftop, fbot, nchan)
     time = np.linspace(0, nsamp * dt, nsamp)
 
+    twin    = twin * 1e-3 # width in s
+    nwin    = np.rint(twin / dt / 2).astype("int")
+
     if dmcand == 0:
         delay = 1
     else:
         delay = dispersion_delay(fbot, ftop, dms = dmcand)
+
+    if delay <= twin:
+        delay = twin
 
     ncand  = np.rint(tcand / dt).astype("int")
     ndelay = np.rint(delay / dt).astype("int")
@@ -344,9 +352,6 @@ def plot_candidate(filename,
 
     #Center the burst around a window (in ms)
 
-    twin    = twin * 1e-3 # width in s
-    nwin    = np.rint(twin / dt / 2).astype("int")
-
     dedispdata = dedispdata[:, ndelay - nwin : ndelay + nwin]
     data = data[:, ndelay : -1]
 
@@ -362,7 +367,7 @@ def plot_candidate(filename,
     time = np.linspace(-twin / 2, twin / 2, dedispdata.shape[1])
     timeseries = np.nansum(dedispdata, axis=0)
 
-    width, width_err = get_width(time,timeseries,2.355)
+    #width, width_err = get_width(time,timeseries,2.355)
 
 
     if fshape is not None:
@@ -373,26 +378,26 @@ def plot_candidate(filename,
         if (sk_flag is True):
             badchans = downsample_mask(badchans, fshape)
     if tshape is not None:
-        print("data.shape (before):", data.shape)
-        print("dedispdata.shape (before):", dedispdata.shape)
-        print("dmt.shape: (before)", dmt.shape)
-        print("len(time): (before)", len(time))
-        print("dt: (before)", dt)
+        #print("data.shape (before):", data.shape)
+        #print("dedispdata.shape (before):", dedispdata.shape)
+        #print("dmt.shape: (before)", dmt.shape)
+        #print("len(time): (before)", len(time))
+        #print("dt: (before)", dt)
         data = resize(data, (data.shape[0], tshape), anti_aliasing = True)
         dedispdata = resize(dedispdata, (data.shape[0], tshape), anti_aliasing = True)
         dmt = resize(dmt, (dmt.shape[0], tshape), anti_aliasing = True)
         time = np.linspace(time[0], time[-1], tshape)
         dt = abs(time[0] - time[1])
-        print("data.shape (after):", data.shape)
-        print("dedispdata.shape (after):", dedispdata.shape)
-        print("dmt.shape: (after)", dmt.shape)
-        print("len(time): (after)", len(time))
-        print("dt: (after)", dt)
+        #print("data.shape (after):", data.shape)
+        #print("dedispdata.shape (after):", dedispdata.shape)
+        #print("dmt.shape: (after)", dmt.shape)
+        #print("len(time): (after)", len(time))
+        #print("dt: (after)", dt)
 
 
     timeseries = np.nansum(dedispdata, axis=0)
     wsamp = np.rint(width / dt).astype("int")
-    snr = get_snr(timeseries, wsamp)
+    #snr = get_snr(timeseries, wsamp)
 
     onbpass, offbpass = get_bandpass_onoff(dedispdata, wsamp)
 
@@ -535,6 +540,20 @@ def _get_parser():
         required = True,
     )
     parser.add_argument(
+        "-w",
+        "--width_cand",
+        type = float,
+        help = "Width of the candidate in ms.",
+        default = 1,
+    )
+    parser.add_argument(
+        "-snr",
+        "--snr_cand",
+        type = float,
+        help = "S/N of the candidate.",
+        default = 10,
+    )
+    parser.add_argument(
         "-tw",
         "--time_window",
         type = float,
@@ -646,6 +665,8 @@ if __name__ == "__main__":
     klt_clean   = args.karhunen_loeve_cleaning
     var_frac    = args.variance_fraction
     renorm_flag = args.no_renorm
+    width       = args.width_cand
+    snr         = args.snr_cand
 
 
     plot_candidate(filename,
@@ -665,5 +686,7 @@ if __name__ == "__main__":
         channel_stop= channel_stop,
         klt_clean = klt_clean,
         var_frac = var_frac,
-        renorm_flag = renorm_flag
+        renorm_flag = renorm_flag,
+        snr = snr,
+        width = width 
         )
