@@ -77,6 +77,8 @@ def klt(signals, threshold):
     eigenspectrum,eigenvectors = eigenbasis(R)
 
     neig = count_elements_for_threshold(eigenspectrum, threshold)
+    str = ("Eigenvalues used: %s")%(neig)
+    print(str)
 
     coeff = np.matmul((signals[:,:]-np.mean(signals,axis=0)),np.conjugate((eigenvectors[:,:])))
     recsignals = np.matmul(coeff[:,0:int(neig)],np.transpose(eigenvectors[:,0:int(neig)])) + np.mean(signals,axis=0)
@@ -88,10 +90,12 @@ def read_and_clean(filename,
                    output_dir = os.getcwd(),
                    output_name = None,
                    sk_flag = False,
+                   flip_flag = False,
                    sk_sig = 3,
                    klt_clean = False,
                    var_frac = 0.3,
-                   klt_window = 1024):
+                   klt_window = 1024,
+                   sk_window = 1):
 
 
 
@@ -116,16 +120,45 @@ def read_and_clean(filename,
     data = filterbank.readBlock(0, nsamp) # (nchans, nsamp)
 
     if (sk_flag is True):
-        badchans = sk_filter(data.T[0:4096*4,:], df, dt, sigma = sk_sig)
-        data[badchans, :] = 0
+        sk_window = int(sk_window / dt)
+        nchunks = nsamp // sk_window
+        for ii in tqdm(range(nchunks)):
+            datagrabbed = data[:,ii * sk_window : (ii + 1) * sk_window].astype(float)
+            badchans = sk_filter(datagrabbed.T, df, dt, sigma = sk_sig)
+            data[badchans, ii * sk_window : (ii + 1) * sk_window] = 0
+        datagrabbed = data[:,nchunks * sk_window : -1]
+        badchans = sk_filter(datagrabbed.T, df, dt, sigma = sk_sig)
+        data[badchans, nchunks * sk_window : -1] = 0
 
     if klt_clean:
-
-        nchunks = nsamp // klt_window
-        for ii in tqdm(range(nchunks)):
-            datagrabbed = data[:,ii * klt_window : (ii + 1) * klt_window]
-            neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
-            data[:,ii * klt_window : (ii + 1) * klt_window] -=  rfitemplate
+       if flip_flag:
+           klt_window = int(klt_window / np.abs(df))
+           rfitemplate_full = np.zeros(data.shape)
+           nchunks = nchan // klt_window
+           for ii in tqdm(range(nchunks)):
+               datagrabbed = data[ii * klt_window : (ii + 1) * klt_window,:].astype(float)
+               neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+               #data[:,ii * klt_window : (ii + 1) * klt_window] -=  rfitemplate.T
+               rfitemplate_full[:,ii * klt_window : (ii + 1) * klt_window] = rfitemplate
+           datagrabbed = data[nchunks * klt_window : -1,:]
+           neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+           #data[:,nchunks * klt_window : -1] -=  rfitemplate.T
+           rfitemplate_full[nchunks * klt_window : -1, : ] = rfitemplate
+           data = np.abs(data - rfitemplate_full)
+       else:
+           klt_window = int(klt_window / dt)
+           rfitemplate_full = np.zeros(data.shape)
+           nchunks = nsamp // klt_window
+           for ii in tqdm(range(nchunks)):
+               datagrabbed = data[:,ii * klt_window : (ii + 1) * klt_window].astype(float)
+               neig, ev, evecs, rfitemplate = klt(datagrabbed.T, var_frac)
+                #data[:,ii * klt_window : (ii + 1) * klt_window] -=  rfitemplate.T
+               rfitemplate_full[:,ii * klt_window : (ii + 1) * klt_window] = rfitemplate.T
+           datagrabbed = data[:,nchunks * klt_window : -1]
+           neig, ev, evecs, rfitemplate = klt(datagrabbed.T, var_frac)
+            #data[:,nchunks * klt_window : -1] -=  rfitemplate.T
+           rfitemplate_full[:,nchunks * klt_window : -1 ] = rfitemplate.T
+           data = np.abs(data - rfitemplate_full)
 
     if int(nbits) == int(8):
         datawrite = data.T.astype("uint8")
@@ -172,12 +205,24 @@ def _get_parser():
                         help = "Find the bad channels via a spectral kurtosis (Bad channels will be set to zero). Default = False.",
                         action = 'store_true',
                         )
+    parser.add_argument('-flip',
+                        '--flip_data',
+                        help = "Flip the data shape (original one is (nchan freq, nbin time)) into (nbin time, nchan freq) to compute the KLT. Default = False.",
+                        action = 'store_flip',
+                        )
     parser.add_argument('-sksig',
                         '--spectral_kurtosis_sigma',
-                        type = int,
+                        type = float,
                         default = 3,
                         action = "store" ,
                         help = "Sigma for the Spectral Kurtosis (Default: 3)"
+                        )
+    parser.add_argument('-sk_win',
+                        '--spectral_kurtosis_window',
+                        type = float,
+                        default = 1,
+                        action = "store" ,
+                        help = "Window (in s) of data to compute the SK."
                         )
     parser.add_argument('-klt',
                         '--karhunen_loeve_cleaning',
@@ -193,10 +238,10 @@ def _get_parser():
                         )
     parser.add_argument('-klt_win',
                         '--klt_window',
-                        type = int,
-                        default = 1024,
+                        type = float,
+                        default = 1,
                         action = "store" ,
-                        help = "Number of time bins to consider in each read to make the KLT. (Default: 1024)"
+                        help = "Window (in s, or 1 MHz if you flip the data) of data to compute the KLT."
                         )
 
     return parser.parse_args()
@@ -213,7 +258,9 @@ if __name__ == '__main__':
     sk_sig      = args.spectral_kurtosis_sigma
     klt_clean   = args.karhunen_loeve_cleaning
     var_frac    = args.variance_fraction
-    kltwindow  = args.klt_window
+    kltwindow   = args.klt_window
+    skwin       = args.spectral_kurtosis_window
+    flip_flag   = args.flip_data
 
 
     read_and_clean(filename,
@@ -223,7 +270,9 @@ if __name__ == '__main__':
                 sk_sig = sk_sig,
                 klt_clean = klt_clean,
                 var_frac = var_frac,
-                klt_window = kltwindow
+                klt_window = kltwindow,
+                sk_window  = skwin,
+                flip_flag = flip_flag
                 )
 
 
