@@ -78,7 +78,7 @@ def klt(signals, threshold):
 
     neig = count_elements_for_threshold(eigenspectrum, threshold)
     str = ("Eigenvalues used: %s")%(neig)
-    print(str)
+    #print(str)
 
     coeff = np.matmul((signals[:,:]-np.mean(signals,axis=0)),np.conjugate((eigenvectors[:,:])))
     recsignals = np.matmul(coeff[:,0:int(neig)],np.transpose(eigenvectors[:,0:int(neig)])) + np.mean(signals,axis=0)
@@ -137,13 +137,14 @@ def read_and_clean(filename,
            nchunks = nchan // klt_window
            for ii in tqdm(range(nchunks)):
                datagrabbed = data[ii * klt_window : (ii + 1) * klt_window,:].astype(float)
-               neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+
+               neig, ev, evecs, rfitemplate = klt(datagrabbed.T, var_frac)
                #data[:,ii * klt_window : (ii + 1) * klt_window] -=  rfitemplate.T
-               rfitemplate_full[:,ii * klt_window : (ii + 1) * klt_window] = rfitemplate
-           datagrabbed = data[nchunks * klt_window : -1,:]
-           neig, ev, evecs, rfitemplate = klt(datagrabbed, var_frac)
+               rfitemplate_full[ii * klt_window : (ii + 1) * klt_window, :] = rfitemplate.T
+           #datagrabbed = data[nchunks * klt_window : -1,:]
+           #neig, ev, evecs, rfitemplate = klt(datagrabbed.T, var_frac)
            #data[:,nchunks * klt_window : -1] -=  rfitemplate.T
-           rfitemplate_full[nchunks * klt_window : -1, : ] = rfitemplate
+           #rfitemplate_full[nchunks * klt_window : -1, : ] = rfitemplate.T
            data = np.abs(data - rfitemplate_full)
        else:
            klt_window = int(klt_window / dt)
@@ -208,7 +209,7 @@ def _get_parser():
     parser.add_argument('-flip',
                         '--flip_data',
                         help = "Flip the data shape (original one is (nchan freq, nbin time)) into (nbin time, nchan freq) to compute the KLT. Default = False.",
-                        action = 'store_flip',
+                        action = 'store_true',
                         )
     parser.add_argument('-sksig',
                         '--spectral_kurtosis_sigma',
