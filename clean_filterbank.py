@@ -145,7 +145,7 @@ def read_and_clean(filename,
            #neig, ev, evecs, rfitemplate = klt(datagrabbed.T, var_frac)
            #data[:,nchunks * klt_window : -1] -=  rfitemplate.T
            #rfitemplate_full[nchunks * klt_window : -1, : ] = rfitemplate.T
-           data = np.abs(data - rfitemplate_full)
+           data = (data - rfitemplate_full) + np.max(np.abs(rfitemplate_full))
        else:
            klt_window = int(klt_window / dt)
            rfitemplate_full = np.zeros(data.shape)
@@ -159,7 +159,7 @@ def read_and_clean(filename,
            neig, ev, evecs, rfitemplate = klt(datagrabbed.T, var_frac)
             #data[:,nchunks * klt_window : -1] -=  rfitemplate.T
            rfitemplate_full[:,nchunks * klt_window : -1 ] = rfitemplate.T
-           data = np.abs(data - rfitemplate_full)
+           data = data - rfitemplate_full + np.max(np.abs(rfitemplate_full))
 
     if int(nbits) == int(8):
         datawrite = data.T.astype("uint8")
