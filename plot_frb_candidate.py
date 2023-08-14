@@ -321,6 +321,7 @@ def plot_candidate(filename,
 
     ncand  = np.rint(tcand / dt).astype("int")
     ndelay = np.rint(delay / dt).astype("int")
+    print("Ncand", ncand)
     print("Ndelay:", ndelay)
 
     data = filterbank.readBlock(ncand - ndelay, 2 * ndelay)
