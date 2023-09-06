@@ -130,6 +130,10 @@ def read_and_clean(filename,
         badchans = sk_filter(datagrabbed.T, df, dt, sigma = sk_sig)
         data[badchans, nchunks * sk_window : -1] = 0
 
+        nbadpixels = np.count_nonzero(data == 0)
+        print("Number of pixel flagged:", nbadpixels / data.shape[0] / data.shape[1])
+
+
     if klt_clean:
        if flip_flag:
            klt_window = int(klt_window / np.abs(df))
